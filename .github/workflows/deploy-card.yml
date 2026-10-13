@@ -1,0 +1,157 @@
+name: Deploy Trung Thu Cho Em
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build static card
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install FFmpeg
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+          echo "FFmpeg:"
+          ffmpeg -version | head -n 1
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python -m pip install --upgrade pip
+          python -m pip install "gdown>=5.2,<6" "beautifulsoup4>=4.12,<5"
+
+      - name: Validate website files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Checking required files..."
+
+          test -f index.html || {
+            echo "ERROR: index.html not found at repository root"
+            exit 1
+          }
+
+          test -f style.css || {
+            echo "ERROR: style.css not found at repository root"
+            exit 1
+          }
+
+          test -f script.js || {
+            echo "ERROR: script.js not found at repository root"
+            exit 1
+          }
+
+          test -d assets || {
+            echo "ERROR: assets/ folder not found at repository root"
+            exit 1
+          }
+
+          test -f scripts/download_drive_videos.py || {
+            echo "ERROR: scripts/download_drive_videos.py not found"
+            exit 1
+          }
+
+          echo "Website structure looks good."
+
+      - name: Download and prepare Drive videos
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python scripts/download_drive_videos.py
+
+      - name: Check prepared videos
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo ""
+          echo "Prepared videos:"
+          find assets/video -type f -print 2>/dev/null | sort || true
+
+          echo ""
+          echo "Video disk usage:"
+          du -sh assets/video 2>/dev/null || true
+
+      - name: Prepare final card
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rm -rf _site
+          mkdir -p _site
+
+          cp index.html _site/
+          cp style.css _site/
+          cp script.js _site/
+          cp -R assets _site/assets
+
+          if [ -f favicon.ico ]; then
+            cp favicon.ico _site/
+          fi
+
+          if [ -f manifest.webmanifest ]; then
+            cp manifest.webmanifest _site/
+          fi
+
+          if [ -f robots.txt ]; then
+            cp robots.txt _site/
+          fi
+
+          touch _site/.nojekyll
+
+          echo ""
+          echo "Final site size:"
+          du -sh _site
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload final card artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy final card
+    runs-on: ubuntu-24.04
+    needs: build
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
