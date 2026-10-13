@@ -1,0 +1,216 @@
+name: Deploy Trung Thu Cho Em
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  prepare-videos:
+    name: Video • ${{ matrix.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        include:
+          - key: "2025"
+            label: "2025"
+            target_dir: "assets/video/nam2025"
+
+          - key: "2026-goiqua"
+            label: "2026 • Gói quà"
+            target_dir: "assets/video/nam2026/goiqua"
+
+          - key: "2026-kickoff"
+            label: "2026 • Kick-off"
+            target_dir: "assets/video/nam2026/kick-off"
+
+          - key: "2026-chua"
+            label: "2026 • Chùa"
+            target_dir: "assets/video/nam2026/chua"
+
+          - key: "2026-tongket"
+            label: "2026 • Tổng kết"
+            target_dir: "assets/video/nam2026/tongket"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Restore this section video cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ matrix.target_dir }}
+          key: prepared-${{ matrix.key }}-${{ github.run_id }}
+          restore-keys: |
+            prepared-${{ matrix.key }}-
+
+      - name: Install FFmpeg
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install "gdown>=6.1,<7" "beautifulsoup4>=4.12,<5"
+
+      - name: Download only this section
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/download_drive_videos.py \
+            --target-dir "${{ matrix.target_dir }}"
+
+      - name: Pack this section
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/video-artifact"
+          tar -czf \
+            "${RUNNER_TEMP}/video-artifact/${{ matrix.key }}.tgz" \
+            "${{ matrix.target_dir }}"
+
+      - name: Upload prepared section
+        uses: actions/upload-artifact@v4
+        with:
+          name: prepared-${{ matrix.key }}
+          path: ${{ runner.temp }}/video-artifact/${{ matrix.key }}.tgz
+          if-no-files-found: error
+          retention-days: 2
+
+  build:
+    name: Merge videos & build site
+    runs-on: ubuntu-24.04
+    needs:
+      - prepare-videos
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install HTML parser
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install "beautifulsoup4>=4.12,<5"
+
+      - name: Download all prepared video sections
+        uses: actions/download-artifact@v5
+        with:
+          pattern: prepared-*
+          path: _video_artifacts
+          merge-multiple: true
+
+      - name: Merge video sections into assets
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Artifacts:"
+          find _video_artifacts -type f -print | sort
+
+          while IFS= read -r archive; do
+            echo "Extracting: ${archive}"
+            tar -xzf "${archive}" -C .
+          done < <(find _video_artifacts -type f -name '*.tgz' | sort)
+
+          echo ""
+          echo "Merged videos:"
+          find assets/video -type f -print 2>/dev/null | sort || true
+
+      - name: Finalize video references
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/download_drive_videos.py --finalize
+
+      - name: Validate website files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f index.html
+          test -f style.css
+          test -f script.js
+          test -d assets
+
+      - name: Prepare final card
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rm -rf _site
+          mkdir -p _site
+
+          cp index.html _site/
+          cp style.css _site/
+          cp script.js _site/
+          cp -R assets _site/assets
+
+          if [ -f favicon.ico ]; then
+            cp favicon.ico _site/
+          fi
+
+          if [ -f manifest.webmanifest ]; then
+            cp manifest.webmanifest _site/
+          fi
+
+          if [ -f robots.txt ]; then
+            cp robots.txt _site/
+          fi
+
+          touch _site/.nojekyll
+
+          echo "Final site size:"
+          du -sh _site
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload final card artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy final card
+    runs-on: ubuntu-24.04
+    needs:
+      - build
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
