@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#fde8df" />
+  <meta name="description" content="Thiệp cảm ơn Trung Thu Cho Em" />
+  <title>Trung Thu Cho Em — Lời cảm ơn</title>
+  <link rel="icon" href="assets/logo/logo-trung-thu.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Dancing+Script:wght@600;700&family=Lora:ital,wght@0,500;1,500;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style id="custom-overrides">
+    /* ===== Giữ nguyên kích thước/tỉ lệ gốc của video & ảnh ===== */
+    .timeline-video-shell{aspect-ratio:auto !important;height:auto !important;padding:0 !important;position:relative;}
+    .timeline-local-player{position:static !important;display:block;width:100% !important;height:auto !important;
+      max-height:80vh;aspect-ratio:16/9 !important;object-fit:contain !important;background:#000;}
+    .year-gallery{align-items:start !important;}
+    .year-gallery .gallery-card{height:auto !important;aspect-ratio:auto !important;}
+    .year-gallery .gallery-card img{display:block;width:100% !important;height:auto !important;
+      aspect-ratio:auto !important;object-fit:contain !important;}
+    #lightboxImage{width:auto !important;height:auto !important;max-width:92vw !important;
+      max-height:90vh !important;object-fit:contain !important;}
+
+
+    /* ===== Mũi tên chuyển video / nút xem lại ===== */
+    .video-slider{position:relative;}
+    .video-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:10;pointer-events:auto;
+      width:44px;height:44px;border:none;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:20px;
+      line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s;}
+    .video-arrow:hover{background:rgba(0,0,0,.85);transform:translateY(-50%) scale(1.08);}
+    .video-prev{left:12px;} .video-next{right:12px;}
+    .video-playlist{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+    .video-counter{margin-top:8px;font-size:14px;opacity:.7;}
+    .video-sources{display:none;}
+    .video-replay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:11;border:none;cursor:pointer;
+      padding:12px 22px;border-radius:999px;background:rgba(0,0,0,.72);color:#fff;font-size:16px;font-weight:600;}
+    .video-replay:hover{background:rgba(0,0,0,.9);}
+    .video-replay[hidden]{display:none;}
+    @media (max-width:600px){.video-arrow{width:36px;height:36px;font-size:16px;}}
+
+    /* ===== Lightbox: mũi tên trước/sau ===== */
+    .lb-arrow{position:fixed;top:50%;transform:translateY(-50%);z-index:20;width:48px;height:48px;border:none;border-radius:50%;
+      background:rgba(0,0,0,.55);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .lb-arrow:hover{background:rgba(0,0,0,.85);}
+    .lb-prev{left:16px;} .lb-next{right:16px;}
+    .lb-arrow[hidden]{display:none;}
+    .lb-count{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:20;color:#fff;font-size:14px;
+      background:rgba(0,0,0,.5);padding:4px 12px;border-radius:999px;}
+    .lb-count[hidden]{display:none;}
+    img.heic-loading{opacity:.45;}
+
+    /* ===== Gallery chỉ có 1 ảnh: hiển thị rộng, căn giữa, cân đối ===== */
+    .year-gallery.is-single{display:flex !important;justify-content:center;}
+    .year-gallery.is-single .gallery-card{width:100% !important;max-width:900px;margin:0 auto;}
+    .year-gallery.is-single .gallery-card img{max-height:75vh;object-fit:contain !important;}
+
+    html,body{overflow-anchor:none;}
+
+    /* ===== Timeline con của năm 2026 ===== */
+    .sub-timeline{margin-top:8px;border-left:2px dashed rgba(224,138,106,.45);padding-left:18px;}
+    .sub-phase{margin:0 0 14px;position:relative;}
+    .sub-phase>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;
+      padding:10px 4px;font-weight:700;font-size:1.05rem;}
+    .sub-phase>summary::-webkit-details-marker{display:none;}
+    .sub-phase>summary::before{content:"";position:absolute;left:-26px;width:14px;height:14px;border-radius:50%;
+      background:#e08a6a;box-shadow:0 0 0 4px rgba(224,138,106,.2);}
+    .sub-phase>summary .sub-num{opacity:.55;font-weight:600;}
+    .sub-phase>summary::after{content:"＋";margin-left:auto;opacity:.6;}
+    .sub-phase[open]>summary::after{content:"－";}
+    .sub-phase-body{padding-top:4px;}
+    /* ===== Nút mũi tên video (năm 2025) ===== */
+  </style>
+</head>
+<body>
+  <!-- =====================================================
+       MUSIC
+       thankYouMusic  = nhạc đi cùng popup lời cảm ơn
+       journeyMusic   = nhạc không lời cho hành trình
+
+       Bạn có thể thay 2 file MP3 tương ứng trong assets/music/.
+       Nếu chưa có MP3, website dùng WAV fallback có sẵn.
+       ===================================================== -->
+  <audio id="thankYouMusic" preload="auto">
+    <source src="assets/music/Dứt-Cơn-Mưa-Này _ 下完這場雨.mp3" type="audio/mp3" />
+  </audio>
+
+  <audio id="journeyMusic" preload="auto" loop>
+	<source src="assets/music/Dứt-Cơn-Mưa-Này _ 下完這場雨.mp3" type="audio/mp3" />
+  </audio>
+
+<!-- Floating ambience -->
+  <div class="sky-decor" aria-hidden="true">
+    <span class="star s1">✦</span>
+    <span class="star s2">✧</span>
+    <span class="star s3">✦</span>
+    <span class="star s4">✧</span>
+  </div>
+
+  <!-- =====================================================
+       OPENING — PASTEL TWO-DOOR CARD
+       ===================================================== -->
+  <section id="cover" class="cover cover-door">
+
+    <div class="door-bg-decor" aria-hidden="true">
+      <span class="bg-star ds1">✦</span>
+      <span class="bg-star ds2">✧</span>
+      <span class="bg-star ds3">✦</span>
+      <span class="bg-star ds4">✦</span>
+      <span class="bg-dot dd1"></span>
+      <span class="bg-dot dd2"></span>
+    </div>
+
+    <div class="door-card-wrap">
+      <div class="door-card">
+
+        <!-- LEFT DOOR -->
+        <div class="door-panel door-left">
+          <div class="door-panel-inner">
+            <span class="door-mini-icon">🏮</span>
+
+            <div class="door-avatar-ring">
+              <div class="door-avatar-ring-2">
+                <img
+                  src="assets/logo/logo-trung-thu.svg"
+                  alt="Logo Trung Thu Cho Em"
+                  class="door-avatar"
+                />
+              </div>
+            </div>
+
+            <span class="door-mini-icon">🌙</span>
+          </div>
+        </div>
+
+        <!-- RIGHT DOOR -->
+        <div class="door-panel door-right">
+          <div class="door-panel-inner">
+            <div class="door-label">
+              ✦ TRUNG THU CHO EM
+            </div>
+
+            <h1 class="door-title">
+              Trung Thu<br />
+              Cho Em
+            </h1>
+
+            <p class="door-subtitle">
+              Một lời cảm ơn nhỏ và hành trình yêu thương
+              đang chờ bạn phía sau. 💛
+            </p>
+
+            <button
+              id="openCardBtn"
+              class="door-open-btn"
+              type="button"
+            >
+              <span aria-hidden="true">💌</span>
+              <span>Mở thiệp</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="door-center-line" aria-hidden="true"></div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       THANK-YOU POPUP — ONE PAGE
+       Nhạc cảm ơn phát khi popup này hiện.
+       ===================================================== -->
+  <dialog id="welcomePopup" class="welcome-popup">
+
+    <div class="popup-book popup-onepage">
+
+      <button
+        id="closeWelcomePopup"
+        class="popup-close"
+        type="button"
+        aria-label="Đóng lời cảm ơn và vào hành trình"
+      >
+        ×
+      </button>
+
+      <div class="popup-book-head">
+        <div class="popup-head-icon" aria-hidden="true">🏮</div>
+
+        <div>
+          <div class="popup-label">TRUNG THU CHO EM</div>
+        </div>
+
+        <div class="popup-mini-moon" aria-hidden="true">🌙</div>
+      </div>
+
+      <div class="thankyou-onepage">
+        <h2 class="popup-title">
+		  <br />
+          <strong>LỜI CẢM ƠN</strong>
+		  <br />
+        </h2>
+        <div class="popup-copy-column">
+
+          <p class="popup-emphasis">
+            Một hạt giống thiện gieo xuống, vạn nụ cười an vui nở rộ.
+          </p>
+
+          <p class="popup-message">
+            Xin chân thành cảm ơn bạn đã mang sự ấm áp,
+            thời gian và tình yêu thương đến với cộng đồng
+            trong những hành trình vừa qua.
+          </p>
+
+          <p class="popup-message">
+             Những phần quà được trao tới các em nhỏ cơ nhỡ, người già neo đơn và người khiếm thị
+             không chỉ là món quà của một mùa <strong>Trung Thu</strong>, mà còn là sự hiện diện của lòng tử tế.
+          </p>
+
+          <p class="popup-message">
+            Chúc bạn và gia đình luôn bình an,
+            đủ đầy yêu thương và gặp thật nhiều điều tốt lành
+            trên hành trình phía trước.
+          </p>
+
+        </div>
+
+        <div class="popup-divider" aria-hidden="true">
+          <span></span>
+          <b>🌙</b>
+          <span></span>
+        </div>
+
+        <p class="popup-signature">
+          <strong>From BTC with 💛</strong>
+        </p>
+
+        <button
+          id="continueJourneyBtn"
+          class="popup-continue"
+          type="button"
+        >
+          <span aria-hidden="true">🎞️</span>
+          <span>Mở hành trình kỷ niệm</span>
+          <span class="popup-arrow" aria-hidden="true">→</span>
+        </button>
+
+        <p class="popup-hint">
+          Tiếp theo là những mùa trăng chúng ta đã cùng đi qua ✨
+        </p>
+
+      </div>
+
+    </div>
+
+  </dialog>
+
+<main id="cardContent" class="card-content" hidden>
+    <button id="musicToggle" class="music-toggle" type="button" aria-label="Bật hoặc tắt nhạc nền" title="Bật / tắt nhạc">
+      <span id="musicIcon">🔊</span>
+      <span class="music-label">Nhạc</span>
+    </button>
+    <button id="journeyMenuBtn" class="journey-menu-btn" type="button" aria-label="Mở mục lục hành trình">
+      <span aria-hidden="true">☰</span>
+      <span>Hành trình</span>
+    </button>
+<!-- JOURNEY / TABLE OF CONTENTS -->
+    <section id="journey" class="journey-section reveal">
+      <div class="journey-intro section">
+        <div class="section-kicker">NHỮNG MÙA TRĂNG ĐÃ ĐI QUA</div>
+        <h2>Cùng nhìn lại<br />những kỷ niệm của chúng ta.</h2>
+        <p>
+          Từ những khoảnh khắc rất nhỏ, chúng ta đã cùng nhau viết nên
+          một hành trình đầy ắp yêu thương.
+        </p>
+        <p class="journey-heart-note">
+          Mỗi năm là một câu chuyện — có những chuyến đi, những phần quà,
+          những nụ cười và những tấm lòng đã cùng ở lại. 💛
+        </p>
+      </div>
+
+      <nav class="timeline-nav" aria-label="Mục lục hành trình">
+        <span class="timeline-nav-label">Hành trình</span>
+        <button class="year-chip" type="button" data-year-target="year-2023">2023</button>
+        <button class="year-chip" type="button" data-year-target="year-2024">2024</button>
+        <button class="year-chip" type="button" data-year-target="year-2025">2025</button>
+        <button class="year-chip is-current" type="button" data-year-target="year-2026">2026</button>
+      </nav>
+
+      <div class="timeline-wrap">
+        <!-- ====================== 2023 ====================== -->
+        <details class="timeline-year" id="year-2023">
+          <summary>
+            <span class="timeline-dot" aria-hidden="true"></span>
+            <span class="year-number">2023</span>
+            <span class="year-summary">
+              <strong>Chương đầu tiên</strong>
+              <small>Video · Hình ảnh</small>
+            </span>
+            <span class="summary-arrow" aria-hidden="true">＋</span>
+          </summary>
+
+          <div class="year-content">
+            <div class="year-copy">
+              <p class="year-eyebrow">TRUNG THU CHO EM · 2023</p>
+              <h3>Một khởi đầu được viết bằng sự sẻ chia.</h3>
+              <p>Năm 2023 là năm đầu tiên hoạt động được khai sinh ra, với mong muốn ban đầu là hướng tới đối tượng đặc biệt nhất là trẻ em. Đây là năm đầu tiên sau ra trường đánh dấu bước chân vào xã hội của các bạn trẻ, là những thế hệ đã được xã hội bao bọc và chăm sóc trưởng thành, chúng tôi mong muốn được đóng góp lại cho xã hội, như một đàn anh đàn chị đi trước có thể góp 1 chút gì nhỏ bé để giúp đất nước giữ gìn và ươm mầm những thế hệ trẻ thơ tiếp theo. Năm này cũng là năm đầu tiên chúng ta có rất nhiều kỉ niệm về kinh nghiệm chuẩn bị quà và bị giật quà. Tuy năm đầu tiên bắt đầu bằng cơn mưa rào tưởng chừng bể kế hoạch cùng với số lượng bị giật quà gần 50% khiến cho mọi người sang chấn tâm lý nhưng không vì thế mà chúng ta nản lòng. Các phần quà cũng bằng một sư nỗ lực nào đó được đưa đến các em đường phố và mái ấm. Năm đầu dạy cho chúng ta một điều rằng không phải kế hoạch nào cũng trọn vẹn nhưng không phải điều không trọn vẹn nào cũng không mang lại ý nghĩa.</p>
+            </div>
+            <!-- EDIT 2023 IMAGES -->
+            <section class="year-block">
+              <div class="block-title"><span>02</span><h4>Khoảnh khắc</h4></div>
+              <div class="year-gallery">
+                <button class="gallery-card" data-full="assets/images/nam2023/IMG_6169.JPG" type="button"><img src="assets/images/nam2023/IMG_6169.JPG" alt="Ảnh minh họa năm 2023 - 1" loading="lazy"><span>Các em nhỏ mái ấm</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2023/IMG_6170.JPG" type="button"><img src="assets/images/nam2023/IMG_6170.JPG" alt="Ảnh minh họa năm 2023 - 2" loading="lazy"><span>Liên hoan</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2023/IMG_6171.JPG" type="button"><img src="assets/images/nam2023/IMG_6171.JPG" alt="Ảnh minh họa năm 2023 - 3" loading="lazy"><span>Chuẩn bị</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2023/IMG_6172.JPG" type="button"><img src="assets/images/nam2023/IMG_6172.JPG" alt="Ảnh minh họa năm 2023 - 3" loading="lazy"><span>Phát quà</span></button>
+              </div>
+            </section>
+
+            <!-- EDIT STATEMENT 2023 -->
+            <section class="year-block statement-block">
+              <div class="block-title"><span>03</span><h4>Sao kê</h4></div>
+              <a class="statement-card resource-placeholder" href="#" data-placeholder="true" data-resource-year="2023">
+                <div class="statement-icon">💛</div>
+                <div>
+                  <small>Vì là năm đầu tự phát nên chưa có sao kê </small>
+                </div>
+                <span class="statement-arrow">↗</span>
+              </a>
+            </section>
+          </div>
+        </details>
+
+        <!-- ====================== 2024 ====================== -->
+        <details class="timeline-year" id="year-2024">
+          <summary>
+            <span class="timeline-dot" aria-hidden="true"></span>
+            <span class="year-number">2024</span>
+            <span class="year-summary">
+              <strong>Lan tỏa yêu thương</strong>
+              <small>Video · Hình ảnh · Sao kê</small>
+            </span>
+            <span class="summary-arrow" aria-hidden="true">＋</span>
+          </summary>
+
+          <div class="year-content">
+            <div class="year-copy">
+              <p class="year-eyebrow">TRUNG THU CHO EM · 2024</p>
+              <h3>Những điều nhỏ bé tiếp tục tìm được đường đến nhau.</h3>
+              <p>Đây là một năm khó khăn nhất của hành trình. Là năm mà tất cả mọi thứ như đóng băng vì khó khăn về kinh tế, cùng với đó là sự thất vọng về năm trước. Đây có lẽ là một năm đáng nhớ nhất, không phải vì nó hoành tráng, mà vì nó lặng lẽ. Chúng ta bắt đầu năm này với một hành trình âm thầm và ít mong đợi hơn, một sư mông lung và nghi ngờ không biết lần này liệu có lặp lại sai lầm của năm trước hay không? Năm này chỉ dám hướng tới các em đường phố với một số lượng phần quà khiêm tốn và một đội ngũ ít ỏi đi phát. Tuy nhiên đây có lẽ là năm truyền nhiều cảm hứng và ý nghĩa nhất, không ai có thể ngờ rằng việc mang balo lại có thể hiệu quả như vậy, cũng không ai dám tin rằng chỉ trong một đêm với số lượng người ít ỏi, quà có thể được phát hết mà không bị giật phần nào. Cảm ơn chúng ta đã không vì thất vọng của năm trước mà chùn bước trước hiện tại. Cảm ơn vì đã cùng nhau trải qua sự khó khăn này</p>
+            </div>
+
+            <!-- EDIT 2024 VIDEO -->
+         <section class="year-block" data-video-slider>
+            <div class="block-title"><span>01</span><h4>Video clip</h4></div>
+
+            <div class="timeline-video-shell video-slider">
+              <button class="video-arrow video-prev" type="button" aria-label="Video trước" data-dir="-1">&#10094;</button>
+              <video class="timeline-local-player" controls playsinline preload="metadata">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+              </video>
+              <button class="video-arrow video-next" type="button" aria-label="Video kế tiếp" data-dir="1">&#10095;</button>
+            </div>
+
+            <div class="video-playlist"></div>
+            <p class="video-counter"></p>
+
+            <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
+            <div class="video-sources">
+              <span data-src="assets/video/nam2024/2e536a30e2e7154f7d8aec0cfc95e884.MP4"></span>
+            </div>
+          </section>
+
+            <!-- EDIT 2024 IMAGES -->
+            <section class="year-block">
+              <div class="block-title"><span>02</span><h4>Khoảnh khắc</h4></div>
+              <div class="year-gallery">
+                <button class="gallery-card" data-full="assets/images/nam2024/IMG_6163.JPG" type="button"><img src="assets/images/nam2024/IMG_6163.JPG" alt="Ảnh minh họa năm 2024 - 1" loading="lazy"><span>Khoảnh khắc 01</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2024/IMG_6164.JPG" type="button"><img src="assets/images/nam2024/IMG_6164.JPG" alt="Ảnh minh họa năm 2024 - 2" loading="lazy"><span>Khoảnh khắc 02</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2024/IMG_6166.JPG" type="button"><img src="assets/images/nam2024/IMG_6166.JPG" alt="Ảnh minh họa năm 2024 - 3" loading="lazy"><span>Khoảnh khắc 03</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2024/IMG_6167.JPG" type="button"><img src="assets/images/nam2024/IMG_6167.JPG" alt="Ảnh minh họa năm 2024 - 2" loading="lazy"><span>Khoảnh khắc 04</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2024/IMG_6168.JPG" type="button"><img src="assets/images/nam2024/IMG_6168.JPG" alt="Ảnh minh họa năm 2024 - 2" loading="lazy"><span>Khoảnh khắc 05</span></button>
+              </div>
+            </section>
+
+            <!-- EDIT STATEMENT 2024 -->
+            <section class="year-block statement-block">
+              <div class="block-title"><span>03</span><h4>Sao kê</h4></div>
+              
+              <!-- Đã cập nhật href, xóa class/thuộc tính chặn link và thêm target="_blank" -->
+              <a class="statement-card" href="assets/saoke/Năm2024.pdf" target="_blank" data-resource-year="2024">
+                <div class="statement-icon">PDF</div>
+                <div><strong>Xem sao kê 2024</strong><small>Minh bạch đóng góp & chi phí hoạt động</small></div>
+                <span class="statement-arrow">↗</span>
+              </a>
+              
+            </section>
+          </div>
+        </details>
+
+        <!-- ====================== 2025 ====================== -->
+        <details class="timeline-year" id="year-2025">
+          <summary>
+            <span class="timeline-dot" aria-hidden="true"></span>
+            <span class="year-number">2025</span>
+            <span class="year-summary">
+              <strong>Nối dài vòng tay</strong>
+              <small>Video · Hình ảnh · Sao kê</small>
+            </span>
+            <span class="summary-arrow" aria-hidden="true">＋</span>
+          </summary>
+
+          <div class="year-content">
+            <div class="year-copy">
+              <p class="year-eyebrow">TRUNG THU CHO EM · 2025</p>
+              <h3>Thêm một mùa trăng, thêm nhiều người cùng bước.</h3>
+              <p>Tiếp nối thành công từ năm trước cùng với lòng tin hơn về hành trình, đây có lẽ sẽ là một năm vô cùng ấm áp. Không còn làm một cách lặng lẽ, chúng tôi đã mở lòng mình hơn để chia sẻ chương trình này cho những người bạn xung quanh. Chính bản thân chúng tôi cũng không thể ngờ, hóa ra lại có nhiều người cùng chung suy nghĩ với nhau đến như vậy. Mọi người đến cùng với trái tim chân thành và tin tưởng nhất, luôn luôn đồng lòng và không ngại xa xôi mưa gió cho hành trình này. Một năm mà tôi nhận ra rằng, chúng ta sẽ không bao giờ tìm thấy nhau nếu điều mình làm không bao giờ được nói ra. Một năm với sự chung tay của rất nhiều người từ mặt vật chất đến tinh thần đã kéo một số lượng phần quà kỉ lục nhất. Ngoài ra, năm này còn hướng tới đối tượng không chỉ trẻ em đường phố mà còn tặng lồng đèn handmade và gửi thiệp cho các bạn nhỏ ở bệnh viện K. Một năm mà chúng tôi nhận nhiều hơn cho đi, không chỉ nhận được bạn bè mà còn là niềm tin và niềm hạnh phúc.</p>
+            </div>
+
+            <!-- EDIT 2025 VIDEO -->
+          <section class="year-block" data-video-slider>
+            <div class="block-title"><span>01</span><h4>Video clip</h4></div>
+
+            <div class="timeline-video-shell video-slider">
+              <button class="video-arrow video-prev" type="button" aria-label="Video trước" data-dir="-1">&#10094;</button>
+              <video class="timeline-local-player" controls playsinline preload="metadata">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+              </video>
+              <button class="video-arrow video-next" type="button" aria-label="Video kế tiếp" data-dir="1">&#10095;</button>
+            </div>
+
+            <div class="video-playlist"></div>
+            <p class="video-counter"></p>
+
+            <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
+            <div class="video-sources">
+              <span data-src="assets/video/nam2025/copy_1C31CD1F-4443-457D-9059-9BCDAFB27296.MOV"></span>
+              <span data-src="assets/video/nam2025/copy_FDF31EFD-0B06-4478-9BC8-3D2FEB26706F.MOV"></span>
+              <span data-src="assets/video/nam2025/IMG_0346.MOV"></span>
+              <span data-src="assets/video/nam2025/IMG_0302.MOV"></span>
+            </div>
+          </section>
+            <!-- EDIT 2025 IMAGES -->
+            <section class="year-block">
+              <div class="block-title"><span>02</span><h4>Khoảnh khắc</h4></div>
+              <div class="year-gallery">
+                <button class="gallery-card" data-full="assets/images/nam2025/IMG_0343.JPG" type="button"><img src="assets/images/nam2025/IMG_0343.JPG" alt="Ảnh minh họa năm 2025 - 1" loading="lazy"><span>Khoảnh khắc 01</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2025/66c974f03e9e075cb29599838da6df29.JPEG" type="button"><img src="assets/images/nam2025/66c974f03e9e075cb29599838da6df29.JPEG" alt="Ảnh minh họa năm 2025 - 1" loading="lazy"><span>Khoảnh khắc 02</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2025/IMG_0367.JPG" type="button"><img src="assets/images/nam2025/IMG_0367.JPG" alt="Ảnh minh họa năm 2025 - 1" loading="lazy"><span>Khoảnh khắc 03</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2025/IMG_0368.JPG" type="button"><img src="assets/images/nam2025/IMG_0368.JPG" alt="Ảnh minh họa năm 2025 - 1" loading="lazy"><span>Khoảnh khắc 04</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2025/IMG_0373.JPG" type="button"><img src="assets/images/nam2025/IMG_0373.JPG" alt="Ảnh minh họa năm 2025 - 1" loading="lazy"><span>Khoảnh khắc 05</span></button>
+              </div>
+            </section>
+
+            <!-- EDIT STATEMENT 2025 -->
+            <section class="year-block statement-block">
+              <div class="block-title"><span>03</span><h4>Sao kê</h4></div>
+              
+              <!-- Đã cập nhật href, xóa class/thuộc tính chặn link và thêm target="_blank" -->
+              <a class="statement-card" href="assets/saoke/Năm2025.pdf" target="_blank" data-resource-year="2025">
+                <div class="statement-icon">PDF</div>
+                <div><strong>Xem sao kê 2025</strong><small>Minh bạch đóng góp & chi phí hoạt động</small></div>
+                <span class="statement-arrow">↗</span>
+              </a>
+              
+            </section>
+          </div>
+        </details>
+
+        <!-- ====================== 2026 ====================== -->
+        <details class="timeline-year" id="year-2026" open>
+          <summary>
+            <span class="timeline-dot" aria-hidden="true"></span>
+            <span class="year-number">2026</span>
+            <span class="year-summary">
+              <strong>Mùa trăng hiện tại</strong>
+              <small>Video · Hình ảnh · Sao kê</small>
+            </span>
+            <span class="summary-arrow" aria-hidden="true">＋</span>
+          </summary>
+
+          <div class="year-content">
+            <div class="year-copy">
+              <p class="year-eyebrow">TRUNG THU CHO EM · 2026</p>
+              <h3>Một hạt giống thiện gieo xuống, vạn nụ cười an vui nở rộ.</h3>
+              <p>Trao tặng những phần quà và sự ấm áp đến trẻ em cơ nhỡ đường phố, người già neo đơn và người khiếm thị.</p>
+            </div>
+
+            <!-- EDIT 2026 — TIMELINE CHIA NHỎ -->
+            <div class="sub-timeline">
+
+            <!-- ===== 2026 · 1. Gói quà ===== -->
+            <details class="sub-phase">
+              <summary><span class="sub-num">01</span><span>Gói quà</span></summary>
+              <div class="sub-phase-body">
+              <section class="year-block" data-video-slider>
+            <div class="block-title"><span>01</span><h4>Video clip</h4></div>
+
+            <div class="timeline-video-shell video-slider">
+              <button class="video-arrow video-prev" type="button" aria-label="Video trước" data-dir="-1">&#10094;</button>
+              <video class="timeline-local-player" controls playsinline preload="metadata">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+              </video>
+              <button class="video-arrow video-next" type="button" aria-label="Video kế tiếp" data-dir="1">&#10095;</button>
+            </div>
+
+            <div class="video-playlist"></div>
+            <p class="video-counter"></p>
+
+            <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
+            <div class="video-sources">
+              <span data-src="assets/video/nam2026/goiqua/1K2VDB7CV_5R0TQO.mp4"></span>
+              <span data-src="assets/video/nam2026/goiqua/copy_F8FBB663-2E23-4F22-BDD9-63030E9B332D.mov"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_4745.MOV"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_4748.MOV"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_4750.MOV"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_5904.MOV"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_5908.MOV"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_5909.MOV"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_5910.MOV"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_5917.MOV"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_6024.MOV"></span>
+            </div>
+          </section>
+              <section class="year-block">
+                <div class="block-title"><span>02</span><h4>Khoảnh khắc</h4></div>
+                <!-- 👉 DÁN ĐƯỜNG DẪN ẢNH VÀO CẢ data-full VÀ src (copy thêm dòng nếu cần nhiều ảnh) -->
+                <div class="year-gallery">
+                  <button class="gallery-card" data-full="assets/images/nam2026/goiqua/IMG_5911.jpg" type="button"><img src="assets/images/nam2026/goiqua/IMG_5911.jpg" alt="Ảnh gói quà" loading="lazy"><span>Khoảnh khắc</span></button>
+                </div>
+              </section>
+              </div>
+            </details>
+
+            <!-- ===== 2026 · 2. Kick-off ===== -->
+            <details class="sub-phase">
+              <summary><span class="sub-num">02</span><span>Kick-off</span></summary>
+              <div class="sub-phase-body">
+              <section class="year-block" data-video-slider>
+            <div class="block-title"><span>01</span><h4>Video clip</h4></div>
+
+            <div class="timeline-video-shell video-slider">
+              <button class="video-arrow video-prev" type="button" aria-label="Video trước" data-dir="-1">&#10094;</button>
+              <video class="timeline-local-player" controls playsinline preload="metadata">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+              </video>
+              <button class="video-arrow video-next" type="button" aria-label="Video kế tiếp" data-dir="1">&#10095;</button>
+            </div>
+
+            <div class="video-playlist"></div>
+            <p class="video-counter"></p>
+
+            <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
+            <div class="video-sources">
+              <span data-src="assets/video/nam2026/kick-off/IMG_5992.mp4"></span>
+              <span data-src="assets/video/nam2026/kick-off/IMG_6642.mp4"></span>
+              <span data-src="assets/video/nam2026/kick-off/IMG_6643.mp4"></span>
+              <span data-src="assets/video/nam2026/kick-off/IMG_6644.mp4"></span>
+              <span data-src="assets/video/nam2026/kick-off/IMG_9449.mp4"></span>
+              <span data-src="assets/video/nam2026/kick-off/IMG_9453.mp4"></span>
+              <span data-src="assets/video/nam2026/kick-off/IMG_9738.mp4"></span>
+              <span data-src="assets/video/nam2026/kick-off/IMG_9739.mp4"></span>
+              <span data-src="assets/video/nam2026/kick-off/IMG_9740.mp4"></span>
+            </div>
+          </section>
+              <section class="year-block">
+                <div class="block-title"><span>02</span><h4>Khoảnh khắc</h4></div>
+                <!-- 👉 DÁN ĐƯỜNG DẪN ẢNH VÀO CẢ data-full VÀ src (copy thêm dòng nếu cần nhiều ảnh) -->
+                <div class="year-gallery">
+                  <button class="gallery-card" data-full="assets/images/nam2026/kick-off/att.ow2_OerhZY1LLBeK7U1dNfpY3mifNw8narrmg36eMFw.jpg" type="button"><img src="assets/images/nam2026/kick-off/att.ow2_OerhZY1LLBeK7U1dNfpY3mifNw8narrmg36eMFw.jpg" alt="Ảnh kick-off 1" loading="lazy"><span>Khoảnh khắc 01</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/kick-off/IMG_5997.jpg" type="button"><img src="assets/images/nam2026/kick-off/IMG_5997.jpg" alt="Ảnh kick-off 2" loading="lazy"><span>Khoảnh khắc 02</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/kick-off/IMG_6635.JPG" type="button"><img src="assets/images/nam2026/kick-off/IMG_6635.JPG" alt="Ảnh kick-off 3" loading="lazy"><span>Khoảnh khắc 03</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/kick-off/IMG_8712.jpg" type="button"><img src="assets/images/nam2026/kick-off/IMG_8712.jpg" alt="Ảnh kick-off 4" loading="lazy"><span>Khoảnh khắc 04</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/kick-off/IMG_8713.jpg" type="button"><img src="assets/images/nam2026/kick-off/IMG_8713.jpg" alt="Ảnh kick-off 5" loading="lazy"><span>Khoảnh khắc 05</span></button>
+                </div>
+              </section>
+              </div>
+            </details>
+
+            <!-- ===== 2026 · 3. Chùa ===== -->
+            <details class="sub-phase">
+              <summary><span class="sub-num">03</span><span>Chùa</span></summary>
+              <div class="sub-phase-body">
+              <section class="year-block" data-video-slider>
+            <div class="block-title"><span>01</span><h4>Video clip</h4></div>
+
+            <div class="timeline-video-shell video-slider">
+              <button class="video-arrow video-prev" type="button" aria-label="Video trước" data-dir="-1">&#10094;</button>
+              <video class="timeline-local-player" controls playsinline preload="metadata">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+              </video>
+              <button class="video-arrow video-next" type="button" aria-label="Video kế tiếp" data-dir="1">&#10095;</button>
+            </div>
+
+            <div class="video-playlist"></div>
+            <p class="video-counter"></p>
+
+            <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
+            <div class="video-sources">
+              <span data-src="assets/video/nam2026/chua/1K3K1I3P0_3SBFRU.mp4"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6029.MOV"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6034.MOV"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6038.MOV"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6040.MOV"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6044.MOV"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6046.MOV"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6054.MOV"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6055.MOV"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6056.MOV"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6057.MOV"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6059.MOV"></span>
+            </div>
+          </section>
+              <section class="year-block">
+                <div class="block-title"><span>02</span><h4>Khoảnh khắc</h4></div>
+                <!-- 👉 DÁN ĐƯỜNG DẪN ẢNH VÀO CẢ data-full VÀ src (copy thêm dòng nếu cần nhiều ảnh) -->
+                <div class="year-gallery">
+                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6033.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6033.jpg" alt="Ảnh chùa 1" loading="lazy"><span>Khoảnh khắc 01</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6045.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6045.jpg" alt="Ảnh chùa 2" loading="lazy"><span>Khoảnh khắc 02</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6048.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6048.jpg" alt="Ảnh chùa 3" loading="lazy"><span>Khoảnh khắc 03</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6050.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6050.jpg" alt="Ảnh chùa 4" loading="lazy"><span>Khoảnh khắc 04</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8654.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8654.jpg" alt="Ảnh chùa 5" loading="lazy"><span>Khoảnh khắc 05</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8658.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8658.jpg" alt="Ảnh chùa 6" loading="lazy"><span>Khoảnh khắc 06</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8666.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8666.jpg" alt="Ảnh chùa 7" loading="lazy"><span>Khoảnh khắc 07</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8673.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8673.jpg" alt="Ảnh chùa 8" loading="lazy"><span>Khoảnh khắc 08</span></button>
+                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8678.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8678.jpg" alt="Ảnh chùa 9" loading="lazy"><span>Khoảnh khắc 09</span></button>
+                </div>
+              </section>
+              </div>
+            </details>
+
+            <!-- ===== 2026 · 4. Tổng kết ===== -->
+            <details class="sub-phase">
+              <summary><span class="sub-num">04</span><span>Tổng kết</span></summary>
+              <div class="sub-phase-body">
+              <section class="year-block" data-video-slider>
+            <div class="block-title"><span>01</span><h4>Video clip</h4></div>
+
+            <div class="timeline-video-shell video-slider">
+              <button class="video-arrow video-prev" type="button" aria-label="Video trước" data-dir="-1">&#10094;</button>
+              <video class="timeline-local-player" controls playsinline preload="metadata">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+              </video>
+              <button class="video-arrow video-next" type="button" aria-label="Video kế tiếp" data-dir="1">&#10095;</button>
+            </div>
+
+            <div class="video-playlist"></div>
+            <p class="video-counter"></p>
+
+            <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
+            <div class="video-sources">
+              <span data-src="assets/video/nam2026/tongket/copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.MOV"></span>
+              <span data-src="assets/video/nam2026/tongket/copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.MOV"></span>
+              <span data-src="assets/video/nam2026/tongket/Trailler.mov"></span>
+            </div>
+          </section>
+              </div>
+            </details>
+
+            <!-- ===== 2026 · 5. Sao kê ===== -->
+            <details class="sub-phase">
+              <summary><span class="sub-num">05</span><span>Sao kê</span></summary>
+              <div class="sub-phase-body">
+              <section class="year-block statement-block">
+              <div class="block-title"><span>01</span><h4>Sao kê</h4></div>
+              
+              <!-- Đã cập nhật href, xóa class/thuộc tính chặn link và thêm target="_blank" -->
+              <a class="statement-card" href="assets/saoke/Năm2026.pdf" target="_blank" data-resource-year="2026">
+                <div class="statement-icon">PDF</div>
+                <div><strong>Xem sao kê 2026</strong><small>Minh bạch đóng góp & chi phí hoạt động</small></div>
+                <span class="statement-arrow">↗</span>
+              </a>
+              
+            </section>
+              </div>
+            </details>
+
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ENDING -->
+    <section id="ending" class="section ending-section reveal">
+      <img src="assets/logo/logo-trung-thu.svg" alt="" class="ending-logo" aria-hidden="true" />
+      <p class="ending-lead">Cảm ơn bạn vì đã trở thành<br />một phần của hành trình này.</p>
+      <p class="ending-quote">“Những điều tốt đẹp luôn bắt đầu từ những tấm lòng biết sẻ chia.”</p>
+      <div class="ending-rule"></div>
+      <h2>TRUNG THU CHO EM</h2>
+      <p class="ending-small">Gửi một mùa trăng ấm áp đến những người cần được ôm bằng yêu thương.</p>
+      <a class="back-top" id="readThankYouAgainBtn" href="#">Đọc lại lời cảm ơn ↑</a>
+    </section>
+  </main>
+
+  <!-- IMAGE LIGHTBOX -->
+  <dialog id="lightbox" class="lightbox">
+    <button id="closeLightbox" class="lightbox-close" type="button" aria-label="Đóng ảnh">×</button>
+    <img id="lightboxImage" alt="Ảnh phóng to" />
+    <button id="lbPrev" class="lb-arrow lb-prev" type="button" aria-label="Ảnh trước">&#10094;</button>
+    <button id="lbNext" class="lb-arrow lb-next" type="button" aria-label="Ảnh kế tiếp">&#10095;</button>
+    <span id="lbCount" class="lb-count" hidden></span>
+  </dialog>
+
+
+  <dialog id="resourceDialog" class="resource-dialog">
+    <button id="closeResourceDialog" class="resource-dialog-close" type="button" aria-label="Đóng">×</button>
+    <div class="resource-dialog-icon">📄</div>
+    <h3 id="resourceDialogTitle">Sao kê chưa được cập nhật</h3>
+    <p id="resourceDialogText">Bạn chỉ cần gắn file PDF hoặc link Google Drive vào nút này sau.</p>
+  </dialog>
+
+  <noscript>Trang thiệp cần JavaScript để điều khiển nhạc và video.</noscript>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="script.js"></script>
+  <script>
+  /* =====================================================
+     Điều khiển chung: nhạc nền · video · ảnh (HEIC + mũi tên)
+     ===================================================== */
+  (function () {
+    /* ---------- NHẠC NỀN / VIDEO ---------- */
+    var music = ['thankYouMusic', 'journeyMusic']
+      .map(function (id) { return document.getElementById(id); })
+      .filter(Boolean);
+
+    function pauseMusic() { music.forEach(function (a) { if (!a.paused) a.pause(); }); }
+    function videos() { return Array.prototype.slice.call(document.querySelectorAll('video')); }
+    function anyVideoPlaying() { return videos().some(function (v) { return !v.paused && !v.ended; }); }
+
+    function replayBtn(v) {
+      var shell = v.closest('.timeline-video-shell') || v.parentNode;
+      var b = shell.querySelector('.video-replay');
+      if (!b) {
+        b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'video-replay';
+        b.hidden = true;
+        b.textContent = '↻ Xem lại';
+        b.addEventListener('click', function () {
+          b.hidden = true;
+          try { v.currentTime = 0; } catch (e) {}
+          var p = v.play(); if (p && p.catch) p.catch(function () {});
+        });
+        shell.appendChild(b);
+      }
+      return b;
+    }
+
+    videos().forEach(function (v) { v.loop = false; v.removeAttribute('loop'); });
+
+    // Bật video => tắt nhạc nền, dừng video khác, ẩn nút xem lại
+    document.addEventListener('play', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO') return;
+      v.loop = false;
+      pauseMusic();
+      videos().forEach(function (o) { if (o !== v && !o.paused) o.pause(); });
+      replayBtn(v).hidden = true;
+    }, true);
+
+    // Hết video => dừng ở cuối, KHÔNG lặp, KHÔNG tự chuyển; chỉ phát lại khi bấm "Xem lại"
+    document.addEventListener('ended', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO') return;
+      e.stopPropagation();
+      v.loop = false;
+      v.pause();
+      replayBtn(v).hidden = false;
+    }, true);
+
+    // Giữ đúng tỉ lệ gốc của từng video khi đã biết kích thước
+    document.addEventListener('loadedmetadata', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO' || !v.videoWidth) return;
+      v.style.setProperty('aspect-ratio', v.videoWidth + ' / ' + v.videoHeight, 'important');
+    }, true);
+
+    music.forEach(function (a) {
+      a.addEventListener('play', function () { if (anyVideoPlaying()) a.pause(); });
+    });
+
+    /* ---------- BỘ CHUYỂN VIDEO (2024 · 2025 · 2026) ---------- */
+    var POSTER_TIME = 0.5; // giây dùng làm khung hình đại diện
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+    document.querySelectorAll('[data-video-slider]').forEach(function (root) {
+      var list = [].map.call(root.querySelectorAll('.video-sources [data-src]'), function (el) {
+        return el.getAttribute('data-src');
+      }).filter(function (x) { return x && x.indexOf('PASTE_') < 0; });
+
+      var video = root.querySelector('video');
+      var counter = root.querySelector('.video-counter');
+      var playlist = root.querySelector('.video-playlist');
+      var arrows = root.querySelectorAll('.video-arrow');
+      var current = 0;
+
+      if (!list.length) {
+        arrows.forEach(function (a) { a.hidden = true; });
+        playlist.hidden = true;
+        counter.textContent = 'Chưa có video.';
+        return;
+      }
+
+      var single = list.length === 1;
+      if (single) {
+        arrows.forEach(function (a) { a.hidden = true; });
+        playlist.hidden = true;
+        counter.hidden = true;
+      }
+
+      list.forEach(function (_, i) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'gallery-card';
+        b.innerHTML = '<span>🎬 Video ' + pad(i + 1) + '</span>';
+        b.addEventListener('click', function () { load(i, true); });
+        playlist.appendChild(b);
+      });
+      var buttons = playlist.querySelectorAll('.gallery-card');
+
+      function load(index, autoplay) {
+        current = (index + list.length) % list.length;
+        var rb = root.querySelector('.video-replay'); if (rb) rb.hidden = true;
+        video.style.removeProperty('aspect-ratio');
+        // Gán src trực tiếp (không khai báo type) để .MOV/.mp4 đều được trình duyệt tự nhận diện
+        video.src = list[current] + '#t=' + POSTER_TIME;
+        video.load();
+        if (autoplay) { var p = video.play(); if (p && p.catch) p.catch(function () {}); }
+        buttons.forEach(function (b, i) { b.classList.toggle('active', i === current); });
+        counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length;
+      }
+
+      arrows.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          load(current + parseInt(btn.getAttribute('data-dir'), 10), true);
+        });
+      });
+
+      // Có tiếng nhưng không có hình: trình duyệt không giải mã được codec hình (thường là HEVC của iPhone)
+      video.addEventListener('loadedmetadata', function () {
+        if (video.videoWidth === 0) {
+          counter.hidden = false;
+          counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length +
+            ' — file này chỉ có tiếng, trình duyệt không giải mã được hình (HEVC). Cần đổi sang MP4 H.264: ' +
+            list[current].split('/').pop();
+        }
+      });
+
+      video.addEventListener('error', function () {
+        counter.hidden = false;
+        counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length +
+          ' — không phát được file này. Kiểm tra đường dẫn (phân biệt hoa/thường) hoặc chuyển sang MP4 (H.264 + AAC).';
+      });
+
+      load(0, false);
+    });
+
+    /* ---------- ẢNH HEIC: tự chuyển sang JPEG nếu trình duyệt không mở được ---------- */
+    var heicCache = {}, heicLib = null;
+    function isHeic(u) { return /\.hei[cf]($|[?#])/i.test(u || ''); }
+
+    function loadScript(src) {
+      return new Promise(function (res, rej) {
+        var sc = document.createElement('script');
+        sc.src = src;
+        sc.onload = res;
+        sc.onerror = function () { rej(new Error('không tải được thư viện ' + src)); };
+        document.head.appendChild(sc);
+      });
+    }
+
+    // Thư viện chính: heic-to (libheif mới, đọc được ảnh iPhone đời mới). Dự phòng: heic2any.
+    function loadHeicLib() {
+      if (heicLib) return heicLib;
+      heicLib = loadScript('https://cdn.jsdelivr.net/npm/heic-to@1.4.2/dist/iife/heic-to.js')
+        .catch(function () { return null; })
+        .then(function () {
+          if (window.HeicTo) return;
+          return loadScript('https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js');
+        });
+      return heicLib;
+    }
+
+    function decodeHeic(blob) {
+      var fn = window.HeicTo && (typeof window.HeicTo === 'function' ? window.HeicTo
+              : (window.HeicTo.heicTo || window.HeicTo.default));
+      var first = fn
+        ? Promise.resolve().then(function () { return fn({ blob: blob, type: 'image/jpeg', quality: 0.85 }); })
+        : Promise.reject(new Error('heic-to chưa sẵn sàng'));
+      return first.catch(function (err) {
+        if (!window.heic2any) {
+          return loadScript('https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js').then(function () {
+            return window.heic2any({ blob: blob, toType: 'image/jpeg', quality: 0.85 });
+          });
+        }
+        return window.heic2any({ blob: blob, toType: 'image/jpeg', quality: 0.85 });
+      }).then(function (out) { return Array.isArray(out) ? out[0] : out; });
+    }
+
+    function convertHeic(url) {
+      if (heicCache[url]) return heicCache[url];
+      heicCache[url] = loadHeicLib()
+        .then(function () { return fetch(url); })
+        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status + ' - sai đường dẫn/tên file?'); return r.blob(); })
+        .then(decodeHeic)
+        .then(function (blob) { return URL.createObjectURL(blob); })
+        .catch(function (err) { delete heicCache[url]; throw err; });
+      return heicCache[url];
+    }
+
+    function setImage(img, url) {
+      img.onerror = null;
+      img.classList.remove('heic-loading');
+      img.src = url;
+      if (isHeic(url)) watchHeic(img, url);
+    }
+
+    function watchHeic(img, url) {
+      function fallback() {
+        img.onerror = null;
+        img.classList.add('heic-loading');
+        convertHeic(url).then(function (blobUrl) {
+          img.classList.remove('heic-loading');
+          img.src = blobUrl;
+        }).catch(function (err) {
+          img.classList.remove('heic-loading');
+          img.alt = 'Không mở được ảnh HEIC';
+          console.error('HEIC lỗi:', url, err);
+          var card = img.closest('.gallery-card');
+          if (card && !card.querySelector('.heic-error')) {
+            var m = document.createElement('small');
+            m.className = 'heic-error';
+            m.style.cssText = 'display:block;color:#b3402a;font-size:12px;padding:4px 8px;';
+            m.textContent = 'Không mở được HEIC (' + (err && err.message ? err.message : 'lỗi') + ') — hãy đổi file sang JPG';
+            card.appendChild(m);
+          }
+        });
+      }
+      img.onerror = fallback;
+      if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) fallback();
+    }
+
+    document.querySelectorAll('img').forEach(function (img) {
+      var u = img.getAttribute('src');
+      if (isHeic(u)) watchHeic(img, u);
+    });
+
+
+    /* ---------- ACCORDION: mở 1 thanh thì thu các thanh khác ---------- */
+    function pauseVideosIn(el) {
+      el.querySelectorAll('video').forEach(function (v) { if (!v.paused) v.pause(); });
+    }
+    function siblingsToClose(d) {
+      var selector = d.classList.contains('timeline-year') ? 'details.timeline-year'
+                   : d.classList.contains('sub-phase') ? 'details.sub-phase' : null;
+      if (!selector) return [];
+      return [].filter.call(d.parentElement.querySelectorAll(':scope > ' + selector), function (o) {
+        return o !== d && o.open;
+      });
+    }
+
+    // Đóng các thanh khác và giữ nguyên vị trí thanh vừa bấm trên màn hình (không bị nhảy)
+    function collapseOthers(d) {
+      var others = siblingsToClose(d);
+      if (!others.length) return;
+      var sum = d.querySelector(':scope > summary') || d;
+      var before = sum.getBoundingClientRect().top;
+      others.forEach(function (o) { o.open = false; pauseVideosIn(o); });
+      var diff = sum.getBoundingClientRect().top - before;
+      if (diff) window.scrollBy(0, diff);
+    }
+
+    document.addEventListener('click', function (e) {
+      var sum = e.target.closest && e.target.closest('summary');
+      if (!sum) return;
+      var d = sum.parentElement;
+      if (d && d.tagName === 'DETAILS' && !d.open) collapseOthers(d); // sắp mở => thu các thanh khác ngay
+    }, true);
+
+    // Trường hợp mở bằng code (nút năm trên đầu trang...)
+    document.addEventListener('toggle', function (e) {
+      var d = e.target;
+      if (!d || d.tagName !== 'DETAILS') return;
+      if (!d.open) { pauseVideosIn(d); return; }
+      collapseOthers(d);
+    }, true);
+
+    // Mặc định khi vào trang: chỉ mở năm 2026, mọi thanh con đều đóng
+    document.querySelectorAll('details.sub-phase').forEach(function (d) { d.open = false; });
+
+    /* ---------- Gallery chỉ có 1 ảnh ---------- */
+    document.querySelectorAll('.year-gallery').forEach(function (g) {
+      if (g.querySelectorAll('.gallery-card').length === 1) g.classList.add('is-single');
+    });
+
+    /* ---------- LIGHTBOX: mũi tên trước / sau cho mọi bộ ảnh ---------- */
+    var lb = document.getElementById('lightbox');
+    var lbImg = document.getElementById('lightboxImage');
+    var lbPrev = document.getElementById('lbPrev');
+    var lbNext = document.getElementById('lbNext');
+    var lbCount = document.getElementById('lbCount');
+    var group = [], idx = 0;
+
+    function showPhoto(i) {
+      idx = (i + group.length) % group.length;
+      var card = group[idx];
+      var url = card.getAttribute('data-full') || card.querySelector('img').getAttribute('src');
+      setImage(lbImg, url);
+      var many = group.length > 1;
+      lbPrev.hidden = lbNext.hidden = !many;
+      lbCount.hidden = !many;
+      lbCount.textContent = (idx + 1) + ' / ' + group.length;
+    }
+
+    document.addEventListener('click', function (e) {
+      var card = e.target.closest && e.target.closest('.year-gallery .gallery-card');
+      if (!card) return;
+      e.preventDefault();
+      e.stopPropagation(); // thay thế handler mở ảnh cũ để có mũi tên
+      group = [].slice.call(card.closest('.year-gallery').querySelectorAll('.gallery-card'));
+      showPhoto(group.indexOf(card));
+      if (!lb.open) { if (lb.showModal) lb.showModal(); else lb.setAttribute('open', ''); }
+    }, true);
+
+    lbPrev.addEventListener('click', function (e) { e.stopPropagation(); showPhoto(idx - 1); });
+    lbNext.addEventListener('click', function (e) { e.stopPropagation(); showPhoto(idx + 1); });
+
+    document.addEventListener('keydown', function (e) {
+      if (!lb.open || group.length < 2) return;
+      if (e.key === 'ArrowRight') showPhoto(idx + 1);
+      if (e.key === 'ArrowLeft') showPhoto(idx - 1);
+    });
+
+    // Vuốt trái/phải trên điện thoại
+    var touchX = null;
+    lbImg.addEventListener('touchstart', function (e) { touchX = e.changedTouches[0].clientX; }, { passive: true });
+    lbImg.addEventListener('touchend', function (e) {
+      if (touchX === null || group.length < 2) return;
+      var dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 50) showPhoto(idx + (dx < 0 ? 1 : -1));
+      touchX = null;
+    });
+  })();
+  </script>
+</body>
+</html>
