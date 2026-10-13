@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+<title id="title">Logo Trung Thu Cho Em</title>
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f5e5b7"/>
+    <stop offset="1" stop-color="#d8b264"/>
+  </linearGradient>
+</defs>
+<circle cx="120" cy="120" r="106" fill="#5d1e2f" stroke="url(#g)" stroke-width="4"/>
+<circle cx="116" cy="88" r="52" fill="url(#g)"/>
+<circle cx="137" cy="74" r="48" fill="#5d1e2f"/>
+<path d="M61 150c19-19 39-28 59-28s40 9 59 28" fill="none" stroke="#f5e5b7" stroke-width="5" stroke-linecap="round"/>
+<path d="M82 159c12-11 25-16 38-16 14 0 27 5 39 16" fill="none" stroke="#d8b264" stroke-width="4" stroke-linecap="round"/>
+<path d="M101 170c7-6 13-9 19-9s12 3 19 9" fill="none" stroke="#f5e5b7" stroke-width="3.5" stroke-linecap="round"/>
+<circle cx="69" cy="88" r="3.5" fill="#f5e5b7"/>
+<circle cx="179" cy="78" r="2.8" fill="#f5e5b7"/>
+<path d="M177 113l4 8 8 4-8 4-4 8-4-8-8-4 8-4z" fill="#f5e5b7"/>
+</svg>
