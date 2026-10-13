@@ -1,0 +1,443 @@
+name: Generate QR Card After Deploy
+
+on:
+  workflow_run:
+    workflows:
+      - "Deploy Trung Thu Cho Em"
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  generate-qr-card:
+    name: Generate 10x15cm QR card
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install QR dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install pillow "qrcode[pil]"
+
+      - name: Generate 10x15cm 300 DPI QR card
+        shell: bash
+        env:
+          WEBSITE_URL: "https://dinhthithuthuyduphong-bot.github.io/trung-thu/"
+        run: |
+          set -euo pipefail
+
+          mkdir -p qr-output
+
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          import qrcode
+          from PIL import Image, ImageDraw, ImageFont
+
+
+          WEBSITE_URL = os.environ["WEBSITE_URL"]
+
+          OUTPUT_DIR = Path("qr-output")
+          OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+          OUTPUT_CARD = OUTPUT_DIR / "thiep-qr-in-10x15cm-300dpi.png"
+          OUTPUT_QR = OUTPUT_DIR / "qr-code.png"
+
+
+          # ============================================================
+          # QR
+          # ============================================================
+
+          qr = qrcode.QRCode(
+              version=None,
+              error_correction=qrcode.constants.ERROR_CORRECT_H,
+              box_size=14,
+              border=5,
+          )
+
+          qr.add_data(WEBSITE_URL)
+          qr.make(fit=True)
+
+          qr_img = qr.make_image(
+              fill_color="#35131d",
+              back_color="#fffdf8",
+          ).convert("RGB")
+
+          qr_img.save(
+              OUTPUT_QR,
+              dpi=(300, 300),
+          )
+
+
+          # ============================================================
+          # CARD 10 x 15 CM @ 300 DPI
+          #
+          # 10 cm  ~= 1181 px
+          # 15 cm  ~= 1772 px
+          # ============================================================
+
+          W = 1181
+          H = 1772
+
+          img = Image.new(
+              "RGB",
+              (W, H),
+              "#fff8ea",
+          )
+
+          draw = ImageDraw.Draw(img)
+
+
+          # ============================================================
+          # FONTS
+          # ============================================================
+
+          REGULAR = [
+              "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+              "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
+          ]
+
+          BOLD = [
+              "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+              "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf",
+          ]
+
+          SERIF = [
+              "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
+              "/usr/share/fonts/truetype/liberation2/LiberationSerif-Regular.ttf",
+          ]
+
+          SERIF_BOLD = [
+              "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
+              "/usr/share/fonts/truetype/liberation2/LiberationSerif-Bold.ttf",
+          ]
+
+
+          def pick_font(candidates, size):
+              for font_path in candidates:
+                  path = Path(font_path)
+                  if path.exists():
+                      return ImageFont.truetype(
+                          str(path),
+                          size,
+                      )
+
+              return ImageFont.load_default()
+
+
+          def font(kind, size):
+              fonts = {
+                  "regular": REGULAR,
+                  "bold": BOLD,
+                  "serif": SERIF,
+                  "serif_bold": SERIF_BOLD,
+              }
+
+              return pick_font(
+                  fonts[kind],
+                  size,
+              )
+
+
+          def center_text(text, y, selected_font, fill):
+              bbox = draw.textbbox(
+                  (0, 0),
+                  text,
+                  font=selected_font,
+              )
+
+              width = bbox[2] - bbox[0]
+
+              draw.text(
+                  (
+                      (W - width) / 2,
+                      y,
+                  ),
+                  text,
+                  font=selected_font,
+                  fill=fill,
+              )
+
+
+          # ============================================================
+          # BACKGROUND / BORDER
+          # ============================================================
+
+          draw.rounded_rectangle(
+              (
+                  48,
+                  48,
+                  W - 48,
+                  H - 48,
+              ),
+              radius=42,
+              fill="#fffdf8",
+              outline="#d8b264",
+              width=3,
+          )
+
+
+          # ============================================================
+          # TOP BURGUNDY HEADER
+          # ============================================================
+
+          draw.rounded_rectangle(
+              (
+                  48,
+                  48,
+                  W - 48,
+                  520,
+              ),
+              radius=42,
+              fill="#5d1e2f",
+          )
+
+          # Cover the lower rounded corners so the header finishes straight.
+          draw.rectangle(
+              (
+                  48,
+                  450,
+                  W - 48,
+                  520,
+              ),
+              fill="#5d1e2f",
+          )
+
+
+          # ============================================================
+          # MOON
+          # ============================================================
+
+          draw.ellipse(
+              (
+                  W // 2 - 110,
+                  108,
+                  W // 2 + 110,
+                  328,
+              ),
+              fill="#f2dfad",
+          )
+
+          draw.ellipse(
+              (
+                  W // 2 - 35,
+                  82,
+                  W // 2 + 155,
+                  282,
+              ),
+              fill="#5d1e2f",
+          )
+
+
+          # Small decorative stars/dots
+          for x, y, r in [
+              (225, 190, 5),
+              (940, 210, 4),
+              (275, 340, 3),
+              (900, 365, 5),
+          ]:
+              draw.ellipse(
+                  (
+                      x - r,
+                      y - r,
+                      x + r,
+                      y + r,
+                  ),
+                  fill="#f2dfad",
+              )
+
+
+          # ============================================================
+          # HEADER TEXT
+          # ============================================================
+
+          center_text(
+              "LỜI CẢM ƠN",
+              352,
+              font("serif_bold", 74),
+              "#fff8ea",
+          )
+
+          center_text(
+              "MỘT MÙA TRĂNG · MỘT VÒNG TAY",
+              453,
+              font("bold", 24),
+              "#f2dfad",
+          )
+
+
+          # ============================================================
+          # QUOTE
+          # ============================================================
+
+          center_text(
+              "Một hạt giống thiện gieo xuống,",
+              600,
+              font("serif", 34),
+              "#5d1e2f",
+          )
+
+          center_text(
+              "vạn nụ cười an vui nở rộ.",
+              654,
+              font("serif", 34),
+              "#5d1e2f",
+          )
+
+
+          # ============================================================
+          # QR BOX
+          # ============================================================
+
+          qr_size = 470
+
+          qr_render = qr_img.resize(
+              (qr_size, qr_size),
+              Image.Resampling.NEAREST,
+          )
+
+          qr_x = (W - qr_size) // 2
+          qr_y = 750
+
+          draw.rounded_rectangle(
+              (
+                  qr_x - 24,
+                  qr_y - 24,
+                  qr_x + qr_size + 24,
+                  qr_y + qr_size + 24,
+              ),
+              radius=24,
+              fill="#fffdf8",
+              outline="#eadbb8",
+              width=2,
+          )
+
+          img.paste(
+              qr_render,
+              (
+                  qr_x,
+                  qr_y,
+              ),
+          )
+
+
+          # ============================================================
+          # LOWER TEXT
+          # ============================================================
+
+          center_text(
+              "Quét mã để cùng nhìn lại hành trình",
+              1284,
+              font("bold", 28),
+              "#35131d",
+          )
+
+          center_text(
+              "đáng nhớ của chúng ta.",
+              1328,
+              font("bold", 28),
+              "#35131d",
+          )
+
+          center_text(
+              WEBSITE_URL,
+              1392,
+              font("regular", 18),
+              "#7a6c62",
+          )
+
+
+          # ============================================================
+          # DIVIDER + FOOTER
+          # ============================================================
+
+          draw.line(
+              (
+                  260,
+                  1490,
+                  W - 260,
+                  1490,
+              ),
+              fill="#d8b264",
+              width=2,
+          )
+
+          center_text(
+              "TRUNG THU CHO EM",
+              1535,
+              font("bold", 28),
+              "#8a2f3f",
+          )
+
+          center_text(
+              "Gửi một mùa trăng ấm áp bằng những tấm lòng biết sẻ chia.",
+              1592,
+              font("regular", 22),
+              "#7a6c62",
+          )
+
+
+          # ============================================================
+          # SAVE
+          # ============================================================
+
+          img.save(
+              OUTPUT_CARD,
+              format="PNG",
+              dpi=(300, 300),
+              optimize=True,
+          )
+
+          (OUTPUT_DIR / "qr-url.txt").write_text(
+              WEBSITE_URL + "\n",
+              encoding="utf-8",
+          )
+
+          print("")
+          print("QR card generated successfully")
+          print("URL :", WEBSITE_URL)
+          print("CARD:", OUTPUT_CARD)
+          print("SIZE:", img.size)
+          print("DPI : 300 x 300")
+          print("")
+          PY
+
+      - name: Verify generated card
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f qr-output/thiep-qr-in-10x15cm-300dpi.png || {
+            echo "ERROR: 10x15cm QR card was not generated"
+            exit 1
+          }
+
+          test -f qr-output/qr-code.png || {
+            echo "ERROR: QR code image was not generated"
+            exit 1
+          }
+
+          echo "Generated files:"
+          ls -lh qr-output
+
+      - name: Upload QR card artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: thiep-qr-in-10x15cm-300dpi
+          path: qr-output/
+          if-no-files-found: error
+          retention-days: 90
