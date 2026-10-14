@@ -2,12 +2,6 @@ name: Prepare Video Media Once
 
 on:
   workflow_dispatch:
-    inputs:
-      force_rebuild:
-        description: "Re-download and replace release videos even if they already exist"
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: write
@@ -19,6 +13,7 @@ jobs:
   ensure-release:
     name: Ensure permanent media release
     runs-on: ubuntu-24.04
+
     steps:
       - name: Ensure release exists
         shell: bash
@@ -26,114 +21,117 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if gh release view "${MEDIA_TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+
+          if gh release view "${MEDIA_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+
             echo "Release ${MEDIA_TAG} already exists."
+
           else
+
             gh release create "${MEDIA_TAG}" \
               --repo "${GITHUB_REPOSITORY}" \
               --target "${GITHUB_SHA}" \
               --title "Trung Thu Cho Em — Web Media" \
-              --notes "Permanent browser-ready video assets used by GitHub Pages."
+              --notes "Permanent video storage for the thank-you card."
+
           fi
 
   prepare:
     name: Media • ${{ matrix.label }}
     needs: ensure-release
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
+
     strategy:
       fail-fast: false
       max-parallel: 5
       matrix:
         include:
-          - key: "2025"
-            label: "2025"
+          - label: "2025"
             target_dir: "assets/video/nam2025"
-          - key: "2026-goiqua"
-            label: "2026 • Gói quà"
+
+          - label: "2026 • Gói quà"
             target_dir: "assets/video/nam2026/goiqua"
-          - key: "2026-kickoff"
-            label: "2026 • Kick-off"
+
+          - label: "2026 • Kick-off"
             target_dir: "assets/video/nam2026/kick-off"
-          - key: "2026-chua"
-            label: "2026 • Chùa"
+
+          - label: "2026 • Chùa"
             target_dir: "assets/video/nam2026/chua"
-          - key: "2026-tongket"
-            label: "2026 • Tổng kết"
+
+          - label: "2026 • Tổng kết"
             target_dir: "assets/video/nam2026/tongket"
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+
       - name: Install FFmpeg
         shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y ffmpeg
+
       - name: Install Python dependencies
         shell: bash
         run: |
           set -euo pipefail
+
           python -m pip install --upgrade pip
-          python -m pip install "gdown>=6.1,<7" "beautifulsoup4>=4.12,<5"
-      - name: Read existing permanent release assets
+          python -m pip install \
+            "gdown>=6.1,<7" \
+            "beautifulsoup4>=4.12,<5"
+
+      - name: Read already-stored release assets
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+
           gh release view "${MEDIA_TAG}" \
             --repo "${GITHUB_REPOSITORY}" \
             --json assets \
-            --jq '.assets[].name' > release-assets.txt
-      - name: Prepare only missing videos for this group
+            --jq '.assets[].name' \
+            > release-assets.txt
+
+          echo "Already stored:"
+          cat release-assets.txt || true
+
+      - name: Download and store only missing HTML-requested files
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          mkdir -p _release_upload
-          FORCE_ARG=""
-          if [ "${{ inputs.force_rebuild }}" = "true" ]; then
-            FORCE_ARG="--force"
-          fi
+
           python scripts/prepare_release_media.py \
             --target-dir "${{ matrix.target_dir }}" \
             --existing-assets-file release-assets.txt \
-            --output-dir _release_upload \
-            ${FORCE_ARG}
-      - name: Upload prepared videos to permanent release
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          shopt -s nullglob
-          FILES=(_release_upload/*.mp4)
-          if [ "${#FILES[@]}" -eq 0 ]; then
-            echo "No new video assets to upload."
-            exit 0
-          fi
-          gh release upload "${MEDIA_TAG}" \
-            "${FILES[@]}" \
-            --repo "${GITHUB_REPOSITORY}" \
-            --clobber
+            --repository "${GITHUB_REPOSITORY}" \
+            --release-tag "${MEDIA_TAG}"
 
   summary:
-    name: Media ready
+    name: Storage summary
     needs: prepare
     if: always()
     runs-on: ubuntu-24.04
+
     steps:
-      - name: Show permanent media assets
+      - name: Show stored release assets
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          echo "https://github.com/${GITHUB_REPOSITORY}/releases/tag/${MEDIA_TAG}"
+
           gh release view "${MEDIA_TAG}" \
             --repo "${GITHUB_REPOSITORY}" \
             --json assets \
