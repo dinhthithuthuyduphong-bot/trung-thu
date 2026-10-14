@@ -903,17 +903,28 @@
         current = (index + list.length) % list.length;
         var rb = root.querySelector('.video-replay'); if (rb) rb.hidden = true;
         video.style.removeProperty('aspect-ratio');
-        // Mobile-safe: gán URL video trực tiếp, không ép seek lúc vừa tải.
+        // Mobile-safe: đổi src trực tiếp.
+        // Không gọi load() khi video đang không có src vì Safari/iOS có thể
+        // phát sinh MEDIA_ERR_SRC_NOT_SUPPORTED cho chính lần reset đó.
         video.pause();
-        video.removeAttribute('src');
-        video.load();
-
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
         video.preload = 'metadata';
         video.src = list[current];
         video.load();
-        if (autoplay) { var p = video.play(); if (p && p.catch) p.catch(function () {}); }
+
+        // Khôi phục counter bình thường mỗi khi chuyển sang video mới.
+        counter.hidden = false;
+        counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length;
+
+        if (autoplay) {
+          var p = video.play();
+          if (p && p.catch) {
+            p.catch(function () {
+              // Không biến lỗi autoplay/user-gesture thành lỗi nguồn video.
+            });
+          }
+        }
         buttons.forEach(function (b, i) {
           var isActive = i === current;
           b.classList.toggle('active', isActive);
@@ -939,9 +950,26 @@
       });
 
       video.addEventListener('error', function () {
+        // Chỉ báo lỗi khi chính URL video hiện tại thật sự lỗi.
+        // Tránh hiển thị lỗi giả do Safari phát event trong lúc đổi source.
+        var assigned = video.getAttribute('src') || '';
+        if (!assigned || !video.error) return;
+
         counter.hidden = false;
         counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length +
-          ' — không phát được video trên thiết bị này. File hoặc máy chủ video có thể không tương thích với trình phát mobile.';
+          ' — không phát được video trên thiết bị này.';
+      });
+
+      video.addEventListener('loadedmetadata', function () {
+        // Nếu source mới đã load được metadata thì xóa thông báo lỗi cũ.
+        counter.hidden = false;
+        counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length;
+      });
+
+      video.addEventListener('canplay', function () {
+        // Đảm bảo lỗi của source trước không còn lưu trên giao diện.
+        counter.hidden = false;
+        counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length;
       });
 
       load(0, false);
