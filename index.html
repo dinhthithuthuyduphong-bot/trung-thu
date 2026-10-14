@@ -56,7 +56,6 @@
     .year-gallery.is-single .gallery-card{width:100% !important;max-width:900px;margin:0 auto;}
     .year-gallery.is-single .gallery-card img{max-height:75vh;object-fit:contain !important;}
 
-    html,body{overflow-anchor:none;}
 
     /* ===== Timeline con của năm 2026 ===== */
     .sub-timeline{margin-top:8px;border-left:2px dashed rgba(224,138,106,.45);padding-left:18px;}
@@ -71,6 +70,50 @@
     .sub-phase[open]>summary::after{content:"－";}
     .sub-phase-body{padding-top:4px;}
     /* ===== Nút mũi tên video (năm 2025) ===== */
+  
+    /* =====================================================
+       TƯƠNG THÍCH ĐIỆN THOẠI + WEB
+       ===================================================== */
+    html{-webkit-text-size-adjust:100%;}
+    img,video{max-width:100%;}
+    .timeline-local-player{max-height:80vh;max-height:80dvh;}
+    .year-copy p,.year-copy h3{overflow-wrap:anywhere;}
+    .timeline-wrap,.year-content,.year-block,.sub-phase-body{min-width:0;}
+    .statement-block{overflow-x:auto;}
+    .sub-phase>summary{min-height:48px;}
+
+    /* Nút nhạc: dời xuống góc phải dưới trên điện thoại / tablet để không đè chip năm 2026 */
+    @media (max-width:900px){
+      #musicToggle.music-toggle{
+        position:fixed !important;
+        top:auto !important; left:auto !important;
+        right:14px !important;
+        bottom:calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+        transform:none !important;
+        width:48px !important; height:48px !important; min-width:0 !important;
+        padding:0 !important; border-radius:50% !important;
+        display:flex !important; align-items:center; justify-content:center;
+        z-index:60 !important;
+      }
+      #musicToggle .music-label{display:none !important;}
+      #musicToggle #musicIcon{font-size:22px;line-height:1;}
+    }
+
+    @media (max-width:600px){
+      .sub-timeline{padding-left:12px;}
+      .sub-phase>summary::before{left:-19px;width:12px;height:12px;}
+      .sub-phase>summary{font-size:1rem;padding:10px 2px;}
+      .year-gallery:not(.is-single){grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:8px !important;}
+      .year-gallery.is-single .gallery-card{max-width:100%;}
+      .year-gallery .gallery-card span{font-size:12px;}
+      .video-playlist{gap:8px;}
+      .video-playlist .gallery-card{flex:1 1 calc(33.333% - 8px);min-width:84px;padding:8px 6px;font-size:13px;}
+      .video-counter{font-size:13px;}
+      .video-replay{padding:10px 18px;font-size:15px;}
+      .lb-arrow{width:40px;height:40px;font-size:18px;}
+      .lb-prev{left:8px;} .lb-next{right:8px;}
+      .timeline-nav{flex-wrap:wrap;row-gap:8px;}
+    }
   </style>
 </head>
 <body>
@@ -434,11 +477,7 @@
             <p class="video-counter"></p>
 
             <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
-            <div
-              class="video-sources"
-              data-drive-folder="https://drive.google.com/drive/folders/1RKXb2fzKfSEyn9yBSKY3QMVclMESIs85"
-              data-target-dir="assets/video/nam2025"
-            >
+            <div class="video-sources">
               <span data-src="assets/video/nam2025/copy_1C31CD1F-4443-457D-9059-9BCDAFB27296.MOV"></span>
               <span data-src="assets/video/nam2025/copy_FDF31EFD-0B06-4478-9BC8-3D2FEB26706F.MOV"></span>
               <span data-src="assets/video/nam2025/IMG_0346.MOV"></span>
@@ -513,11 +552,7 @@
             <p class="video-counter"></p>
 
             <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
-            <div
-              class="video-sources"
-              data-drive-folder="https://drive.google.com/drive/folders/1u74Ncw8ZypUVSm1qDJvaPTdceGydVihA"
-              data-target-dir="assets/video/nam2026/goiqua"
-            >
+            <div class="video-sources">
               <span data-src="assets/video/nam2026/goiqua/1K2VDB7CV_5R0TQO.mp4"></span>
               <span data-src="assets/video/nam2026/goiqua/copy_F8FBB663-2E23-4F22-BDD9-63030E9B332D.mov"></span>
               <span data-src="assets/video/nam2026/goiqua/IMG_4745.MOV"></span>
@@ -560,11 +595,7 @@
             <p class="video-counter"></p>
 
             <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
-            <div
-              class="video-sources"
-              data-drive-folder="https://drive.google.com/drive/folders/19tp_mel-OU-Wt9jypQw5tOKVdRi8bk5p"
-              data-target-dir="assets/video/nam2026/kick-off"
-            >
+            <div class="video-sources">
               <span data-src="assets/video/nam2026/kick-off/IMG_5992.mp4"></span>
               <span data-src="assets/video/nam2026/kick-off/IMG_6642.mp4"></span>
               <span data-src="assets/video/nam2026/kick-off/IMG_6643.mp4"></span>
@@ -609,11 +640,7 @@
             <p class="video-counter"></p>
 
             <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
-            <div
-              class="video-sources"
-              data-drive-folder="https://drive.google.com/drive/folders/19u5XI7671Gev4qIuPIliOC4pofaup6jt"
-              data-target-dir="assets/video/nam2026/chua"
-            >
+            <div class="video-sources">
               <span data-src="assets/video/nam2026/chua/1K3K1I3P0_3SBFRU.mp4"></span>
               <span data-src="assets/video/nam2026/chua/IMG_6029.MOV"></span>
               <span data-src="assets/video/nam2026/chua/IMG_6034.MOV"></span>
@@ -665,11 +692,7 @@
             <p class="video-counter"></p>
 
             <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
-            <div
-              class="video-sources"
-              data-drive-folder="https://drive.google.com/drive/folders/1aR0NLo4dfQ405hJvb8fnmLCVyrfZEa0i"
-              data-target-dir="assets/video/nam2026/tongket"
-            >
+            <div class="video-sources">
               <span data-src="assets/video/nam2026/tongket/copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.MOV"></span>
               <span data-src="assets/video/nam2026/tongket/copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.MOV"></span>
               <span data-src="assets/video/nam2026/tongket/Trailler.mov"></span>
@@ -968,43 +991,14 @@
     });
 
 
-    /* ---------- ACCORDION: mở 1 thanh thì thu các thanh khác ---------- */
+    /* ---------- Thanh xổ: mở độc lập, không tự đóng thanh khác ---------- */
     function pauseVideosIn(el) {
       el.querySelectorAll('video').forEach(function (v) { if (!v.paused) v.pause(); });
     }
-    function siblingsToClose(d) {
-      var selector = d.classList.contains('timeline-year') ? 'details.timeline-year'
-                   : d.classList.contains('sub-phase') ? 'details.sub-phase' : null;
-      if (!selector) return [];
-      return [].filter.call(d.parentElement.querySelectorAll(':scope > ' + selector), function (o) {
-        return o !== d && o.open;
-      });
-    }
-
-    // Đóng các thanh khác và giữ nguyên vị trí thanh vừa bấm trên màn hình (không bị nhảy)
-    function collapseOthers(d) {
-      var others = siblingsToClose(d);
-      if (!others.length) return;
-      var sum = d.querySelector(':scope > summary') || d;
-      var before = sum.getBoundingClientRect().top;
-      others.forEach(function (o) { o.open = false; pauseVideosIn(o); });
-      var diff = sum.getBoundingClientRect().top - before;
-      if (diff) window.scrollBy(0, diff);
-    }
-
-    document.addEventListener('click', function (e) {
-      var sum = e.target.closest && e.target.closest('summary');
-      if (!sum) return;
-      var d = sum.parentElement;
-      if (d && d.tagName === 'DETAILS' && !d.open) collapseOthers(d); // sắp mở => thu các thanh khác ngay
-    }, true);
-
-    // Trường hợp mở bằng code (nút năm trên đầu trang...)
+    // Mở thanh nào thì giữ nguyên các thanh khác; chỉ dừng video khi một thanh được đóng lại
     document.addEventListener('toggle', function (e) {
       var d = e.target;
-      if (!d || d.tagName !== 'DETAILS') return;
-      if (!d.open) { pauseVideosIn(d); return; }
-      collapseOthers(d);
+      if (d && d.tagName === 'DETAILS' && !d.open) pauseVideosIn(d);
     }, true);
 
     // Mặc định khi vào trang: chỉ mở năm 2026, mọi thanh con đều đóng
