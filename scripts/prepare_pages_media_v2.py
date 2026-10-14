@@ -29,6 +29,7 @@ VIDEO_EXTS = {".mov", ".mp4", ".m4v", ".webm", ".mkv", ".avi"}
 DOWNLOAD_RETRIES = 3
 UPLOAD_RETRIES = 3
 RETRY_SECONDS = 5
+LEGACY_MEDIA_TAG = "media-v1"
 
 
 def fail(message: str) -> None:
@@ -136,6 +137,52 @@ def choose_source(matches, html_src: str):
         f"Multiple Drive candidates share stem {Path(html_src).stem}: "
         + ", ".join(Path(str(x.path)).name for x in matches)
     )
+
+
+def download_legacy_release_asset(
+    asset_name: str,
+    repository: str,
+    work_dir: Path,
+) -> Path | None:
+    """
+    Fallback khi file không còn xuất hiện trong Google Drive.
+
+    media-v1 chứa bản MP4 đã chuẩn bị từ pipeline cũ.
+    File đó chỉ được dùng làm INPUT rồi vẫn được transcode lại
+    bằng cấu hình mobile-safe trước khi lưu vào media-pages-v2.
+    """
+    if shutil.which("gh") is None or not os.environ.get("GH_TOKEN"):
+        return None
+
+    legacy_dir = work_dir / "_legacy"
+    legacy_dir.mkdir(parents=True, exist_ok=True)
+
+    legacy_path = legacy_dir / asset_name
+    legacy_path.unlink(missing_ok=True)
+
+    print(
+        f"DRIVE SOURCE MISSING -> fallback to {LEGACY_MEDIA_TAG}: {asset_name}",
+        flush=True,
+    )
+
+    try:
+        subprocess.run(
+            [
+                "gh", "release", "download",
+                LEGACY_MEDIA_TAG,
+                "--repo", repository,
+                "--pattern", asset_name,
+                "--dir", str(legacy_dir),
+            ],
+            check=True,
+        )
+    except subprocess.CalledProcessError:
+        return None
+
+    if not legacy_path.exists() or legacy_path.stat().st_size <= 0:
+        return None
+
+    return legacy_path
 
 
 def download_one(file_id: str, destination: Path) -> None:
@@ -315,19 +362,44 @@ def main():
 
         matches = by_stem.get(stem.casefold(), [])
         chosen = choose_source(matches, html_src)
-        if chosen is None:
-            fail(f"No Drive source found for {html_src}")
-
-        drive_name = Path(str(chosen.path)).name
-        downloaded = work / f"source__{drive_name}"
         output = work / asset
 
         print()
         print(f"HTML   : {html_src}")
-        print(f"DRIVE  : {drive_name}")
         print(f"STORE  : {asset}")
 
-        download_one(str(chosen.id), downloaded)
+        if chosen is None:
+            downloaded = download_legacy_release_asset(
+                asset,
+                args.repository,
+                work,
+            )
+
+            if downloaded is None:
+                available_drive = ", ".join(
+                    sorted(Path(str(entry.path)).name for entry in entries)
+                )
+                fail(
+                    f"No Drive source found for {html_src}; "
+                    f"legacy fallback {LEGACY_MEDIA_TAG}/{asset} also missing. "
+                    f"Drive files visible to gdown: {available_drive}"
+                )
+
+            print(
+                f"SOURCE : legacy release {LEGACY_MEDIA_TAG}/{asset}"
+            )
+
+        else:
+            drive_name = Path(str(chosen.path)).name
+            downloaded = work / f"source__{drive_name}"
+
+            print(f"DRIVE  : {drive_name}")
+
+            download_one(
+                str(chosen.id),
+                downloaded,
+            )
+
         transcode_mobile(downloaded, output)
         validate_mp4(output)
 
