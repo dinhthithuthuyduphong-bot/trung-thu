@@ -901,7 +901,15 @@
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
         video.preload = 'metadata';
-        video.src = list[current];
+
+        // GitHub Pages/CDN có thể còn cache bản video cũ sau khi deploy.
+        // Giữ nguyên data-src để không ảnh hưởng pipeline Prepare,
+        // chỉ thêm version ở runtime để browser lấy đúng bản Pages mới.
+        var sourceUrl = list[current];
+        var joiner = sourceUrl.indexOf('?') >= 0 ? '&' : '?';
+        video.dataset.originalSrc = sourceUrl;
+        video.dataset.cacheRetry = '0';
+        video.src = sourceUrl + joiner + 'media=pages-v2-20261014';
         video.load();
 
         // Khôi phục counter bình thường mỗi khi chuyển sang video mới.
@@ -941,10 +949,25 @@
       });
 
       video.addEventListener('error', function () {
-        // Chỉ báo lỗi khi chính URL video hiện tại thật sự lỗi.
-        // Tránh hiển thị lỗi giả do Safari phát event trong lúc đổi source.
+        // Retry đúng 1 lần với cache-buster mới.
+        // Hữu ích ngay sau deploy khi CDN/browser còn giữ response cũ.
         var assigned = video.getAttribute('src') || '';
         if (!assigned || !video.error) return;
+
+        if (video.dataset.cacheRetry !== '1' && video.dataset.originalSrc) {
+          video.dataset.cacheRetry = '1';
+
+          var retryUrl = video.dataset.originalSrc;
+          var joiner = retryUrl.indexOf('?') >= 0 ? '&' : '?';
+
+          counter.hidden = false;
+          counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length +
+            ' — đang tải lại video…';
+
+          video.src = retryUrl + joiner + 'media=' + Date.now();
+          video.load();
+          return;
+        }
 
         counter.hidden = false;
         counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length +
