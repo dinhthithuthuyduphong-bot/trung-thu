@@ -114,6 +114,16 @@
       .lb-prev{left:8px;} .lb-next{right:8px;}
       .timeline-nav{flex-wrap:wrap;row-gap:8px;}
     }
+  
+    /* ===== Gallery chỉ có 1 ảnh: cân đối theo chiều ngang/dọc của ảnh ===== */
+    .year-gallery.is-single{display:flex !important;justify-content:center;align-items:flex-start;}
+    .year-gallery.is-single .gallery-card{display:flex !important;flex-direction:column;align-items:center;
+      width:min(100%,520px) !important;max-width:100% !important;margin:0 auto;}
+    .year-gallery.is-single .gallery-card img{width:100% !important;height:auto !important;max-height:none !important;
+      object-fit:contain !important;border-radius:inherit;}
+    .year-gallery.is-single.is-portrait .gallery-card{width:min(100%,380px) !important;}
+    .year-gallery.is-single.is-landscape .gallery-card{width:min(100%,760px) !important;}
+    .year-gallery.is-single .gallery-card span{text-align:center;}
   </style>
 </head>
 <body>
@@ -1006,7 +1016,17 @@
 
     /* ---------- Gallery chỉ có 1 ảnh ---------- */
     document.querySelectorAll('.year-gallery').forEach(function (g) {
-      if (g.querySelectorAll('.gallery-card').length === 1) g.classList.add('is-single');
+      if (g.querySelectorAll('.gallery-card').length !== 1) return;
+      g.classList.add('is-single');
+      var img = g.querySelector('img');
+      if (!img) return;
+      function mark() {
+        if (!img.naturalWidth) return;
+        g.classList.remove('is-portrait', 'is-landscape');
+        g.classList.add(img.naturalWidth < img.naturalHeight ? 'is-portrait' : 'is-landscape');
+      }
+      if (img.complete) mark();
+      img.addEventListener('load', mark);
     });
 
     /* ---------- LIGHTBOX: mũi tên trước / sau cho mọi bộ ảnh ---------- */
