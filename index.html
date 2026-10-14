@@ -31,7 +31,22 @@
       line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s;}
     .video-arrow:hover{background:rgba(0,0,0,.85);transform:translateY(-50%) scale(1.08);}
     .video-prev{left:12px;} .video-next{right:12px;}
-    .video-playlist{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+    .video-playlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center;}
+    .video-index-btn{
+      width:38px;height:38px;min-width:38px;padding:0;
+      display:inline-flex;align-items:center;justify-content:center;
+      border:1px solid rgba(224,138,106,.55);border-radius:7px;
+      background:#fffdf8;color:#5d1e2f;
+      font:700 14px/1 "Be Vietnam Pro",sans-serif;
+      cursor:pointer;box-shadow:0 2px 8px rgba(93,30,47,.08);
+      transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease;
+    }
+    .video-index-btn:hover{transform:translateY(-1px);border-color:#e08a6a;}
+    .video-index-btn.active{
+      background:#e08a6a;color:#fff;border-color:#e08a6a;
+      box-shadow:0 3px 10px rgba(224,138,106,.28);
+    }
+    .video-index-btn:focus-visible{outline:2px solid #5d1e2f;outline-offset:2px;}
     .video-counter{margin-top:8px;font-size:14px;opacity:.7;}
     .video-sources{display:none;}
     .video-replay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:11;border:none;cursor:pointer;
@@ -106,8 +121,8 @@
       .year-gallery:not(.is-single){grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:8px !important;}
       .year-gallery.is-single .gallery-card{max-width:100%;}
       .year-gallery .gallery-card span{font-size:12px;}
-      .video-playlist{gap:8px;}
-      .video-playlist .gallery-card{flex:1 1 calc(33.333% - 8px);min-width:84px;padding:8px 6px;font-size:13px;}
+      .video-playlist{gap:7px;}
+      .video-index-btn{width:34px;height:34px;min-width:34px;font-size:13px;border-radius:6px;}
       .video-counter{font-size:13px;}
       .video-replay{padding:10px 18px;font-size:15px;}
       .lb-arrow{width:40px;height:40px;font-size:18px;}
@@ -490,10 +505,10 @@
             <div class="video-sources"
               data-drive-folder="https://drive.google.com/drive/folders/1RKXb2fzKfSEyn9yBSKY3QMVclMESIs85"
               data-target-dir="assets/video/nam2025">
-              <span data-src="assets/video/nam2025/copy_1C31CD1F-4443-457D-9059-9BCDAFB27296.MOV"></span>
-              <span data-src="assets/video/nam2025/copy_FDF31EFD-0B06-4478-9BC8-3D2FEB26706F.MOV"></span>
-              <span data-src="assets/video/nam2025/IMG_0346.MOV"></span>
-              <span data-src="assets/video/nam2025/IMG_0302.MOV"></span>
+              <span data-src="assets/video/nam2025/copy_1C31CD1F-4443-457D-9059-9BCDAFB27296.mp4"></span>
+              <span data-src="assets/video/nam2025/copy_FDF31EFD-0B06-4478-9BC8-3D2FEB26706F.mp4"></span>
+              <span data-src="assets/video/nam2025/IMG_0346.mp4"></span>
+              <span data-src="assets/video/nam2025/IMG_0302.mp4"></span>
             </div>
           </section>
             <!-- EDIT 2025 IMAGES -->
@@ -568,16 +583,16 @@
               data-drive-folder="https://drive.google.com/drive/folders/1u74Ncw8ZypUVSm1qDJvaPTdceGydVihA"
               data-target-dir="assets/video/nam2026/goiqua">
               <span data-src="assets/video/nam2026/goiqua/1K2VDB7CV_5R0TQO.mp4"></span>
-              <span data-src="assets/video/nam2026/goiqua/copy_F8FBB663-2E23-4F22-BDD9-63030E9B332D.mov"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_4745.MOV"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_4748.MOV"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_4750.MOV"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_5904.MOV"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_5908.MOV"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_5909.MOV"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_5910.MOV"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_5917.MOV"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_6024.MOV"></span>
+              <span data-src="assets/video/nam2026/goiqua/copy_F8FBB663-2E23-4F22-BDD9-63030E9B332D.mp4"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_4745.mp4"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_4748.mp4"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_4750.mp4"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_5904.mp4"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_5908.mp4"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_5909.mp4"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_5910.mp4"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_5917.mp4"></span>
+              <span data-src="assets/video/nam2026/goiqua/IMG_6024.mp4"></span>
             </div>
           </section>
               <section class="year-block">
@@ -660,17 +675,17 @@
               data-drive-folder="https://drive.google.com/drive/folders/19u5XI7671Gev4qIuPIliOC4pofaup6jt"
               data-target-dir="assets/video/nam2026/chua">
               <span data-src="assets/video/nam2026/chua/1K3K1I3P0_3SBFRU.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6029.MOV"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6034.MOV"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6038.MOV"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6040.MOV"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6044.MOV"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6046.MOV"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6054.MOV"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6055.MOV"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6056.MOV"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6057.MOV"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6059.MOV"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6029.mp4"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6034.mp4"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6038.mp4"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6040.mp4"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6044.mp4"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6046.mp4"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6054.mp4"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6055.mp4"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6056.mp4"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6057.mp4"></span>
+              <span data-src="assets/video/nam2026/chua/IMG_6059.mp4"></span>
             </div>
           </section>
               <section class="year-block">
@@ -713,9 +728,9 @@
             <div class="video-sources"
               data-drive-folder="https://drive.google.com/drive/folders/1aR0NLo4dfQ405hJvb8fnmLCVyrfZEa0i"
               data-target-dir="assets/video/nam2026/tongket">
-              <span data-src="assets/video/nam2026/tongket/copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.MOV"></span>
-              <span data-src="assets/video/nam2026/tongket/copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.MOV"></span>
-              <span data-src="assets/video/nam2026/tongket/Trailler.mov"></span>
+              <span data-src="assets/video/nam2026/tongket/copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.mp4"></span>
+              <span data-src="assets/video/nam2026/tongket/copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.mp4"></span>
+              <span data-src="assets/video/nam2026/tongket/Trailler.mp4"></span>
             </div>
           </section>
               </div>
@@ -876,12 +891,14 @@
       list.forEach(function (_, i) {
         var b = document.createElement('button');
         b.type = 'button';
-        b.className = 'gallery-card';
-        b.innerHTML = '<span>🎬 Video ' + pad(i + 1) + '</span>';
+        b.className = 'video-index-btn';
+        b.textContent = String(i + 1);
+        b.setAttribute('aria-label', 'Phát video ' + (i + 1));
+        b.setAttribute('aria-pressed', 'false');
         b.addEventListener('click', function () { load(i, true); });
         playlist.appendChild(b);
       });
-      var buttons = playlist.querySelectorAll('.gallery-card');
+      var buttons = playlist.querySelectorAll('.video-index-btn');
 
       function load(index, autoplay) {
         current = (index + list.length) % list.length;
@@ -891,7 +908,11 @@
         video.src = list[current] + '#t=' + POSTER_TIME;
         video.load();
         if (autoplay) { var p = video.play(); if (p && p.catch) p.catch(function () {}); }
-        buttons.forEach(function (b, i) { b.classList.toggle('active', i === current); });
+        buttons.forEach(function (b, i) {
+          var isActive = i === current;
+          b.classList.toggle('active', isActive);
+          b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
         counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length;
       }
 
