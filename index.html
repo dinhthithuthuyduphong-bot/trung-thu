@@ -230,6 +230,163 @@
     }
   </style>
 
+
+  <style id="mobile-popup-font-fix">
+    @media (max-width:600px){
+      #welcomePopup .popup-title,
+      #welcomePopup .popup-title *,
+      #welcomePopup .popup-signature,
+      #welcomePopup .popup-signature *{
+        font-family:"Times New Roman", Times, serif !important;
+        font-style:normal !important;
+        letter-spacing:normal !important;
+      }
+
+      #welcomePopup .popup-message,
+      #welcomePopup .popup-message *{
+        font-family:"Be Vietnam Pro", Arial, sans-serif !important;
+        font-style:normal !important;
+      }
+
+      #welcomePopup .popup-emphasis,
+      #welcomePopup .popup-emphasis *{
+        font-family:"Lora", Georgia, serif !important;
+      }
+
+      #welcomePopup .popup-label,
+      #welcomePopup .popup-hint{
+        font-family:"Be Vietnam Pro", Arial, sans-serif !important;
+      }
+    }
+  </style>
+
+
+  <style id="mobile-popup-hard-stability-fix">
+    /* =====================================================
+       MOBILE POPUP — KHÓA HOÀN TOÀN CHUYỂN ĐỘNG / REFLOW
+       Desktop không bị ảnh hưởng.
+       ===================================================== */
+    @media (max-width:600px){
+      /*
+        popup-book có animation popupReveal ở CSS gốc.
+        Trên mobile toàn bộ chữ sẽ đi theo transform của parent,
+        dù từng dòng chữ đã tắt animation.
+      */
+      #welcomePopup .popup-book,
+      #welcomePopup .popup-book.popup-onepage{
+        animation:none !important;
+        transition:none !important;
+        transform:none !important;
+
+        /* svh ổn định hơn dvh khi thanh địa chỉ mobile co/giãn */
+        max-height:92svh !important;
+      }
+
+      /*
+        Không để bất kỳ phần tử chữ/icon bên trong popup kế thừa
+        animation/transform gây rung hoặc dịch vị trí.
+      */
+      #welcomePopup .popup-book-head,
+      #welcomePopup .popup-head-icon,
+      #welcomePopup .popup-mini-moon,
+      #welcomePopup .thankyou-onepage,
+      #welcomePopup .popup-title,
+      #welcomePopup .popup-title *,
+      #welcomePopup .popup-copy-column,
+      #welcomePopup .popup-copy-column *,
+      #welcomePopup .popup-emphasis,
+      #welcomePopup .popup-emphasis *,
+      #welcomePopup .popup-message,
+      #welcomePopup .popup-message *,
+      #welcomePopup .popup-divider,
+      #welcomePopup .popup-divider *,
+      #welcomePopup .popup-signature,
+      #welcomePopup .popup-signature *,
+      #welcomePopup .popup-hint,
+      #welcomePopup .popup-hint *,
+      #welcomePopup .popup-label,
+      #welcomePopup .popup-label *{
+        animation:none !important;
+        transition:none !important;
+        transform:none !important;
+      }
+
+      /*
+        dvh thay đổi theo browser chrome trên iOS/Android và có thể làm
+        popup co/giãn liên tục. Dùng svh để giữ chiều cao ổn định.
+      */
+      #welcomePopup .thankyou-onepage{
+        max-height:calc(92svh - 53px) !important;
+        scroll-behavior:auto !important;
+        overscroll-behavior:contain;
+      }
+
+      /*
+        Khóa layout chữ để việc webfont hoàn tất không làm nội dung
+        đổi vị trí theo chiều ngang.
+      */
+      #welcomePopup .popup-copy-column{
+        width:100% !important;
+        min-width:0 !important;
+        max-width:530px !important;
+        overflow-x:hidden !important;
+      }
+
+      #welcomePopup .popup-title,
+      #welcomePopup .popup-emphasis,
+      #welcomePopup .popup-message,
+      #welcomePopup .popup-signature,
+      #welcomePopup .popup-hint{
+        position:static !important;
+        max-width:100% !important;
+        margin-left:auto !important;
+        margin-right:auto !important;
+        text-rendering:optimizeLegibility;
+        -webkit-font-smoothing:antialiased;
+      }
+
+      /*
+        Không đổi font desktop.
+        Mobile dùng font xác định rõ ràng để không rơi vào generic cursive
+        khác nhau giữa Android/iOS.
+      */
+      #welcomePopup .popup-title,
+      #welcomePopup .popup-title *,
+      #welcomePopup .popup-signature,
+      #welcomePopup .popup-signature *{
+        font-family:"Times New Roman", Times, serif !important;
+        font-style:normal !important;
+      }
+
+      #welcomePopup .popup-message,
+      #welcomePopup .popup-message *,
+      #welcomePopup .popup-label,
+      #welcomePopup .popup-hint{
+        font-family:"Be Vietnam Pro", Arial, sans-serif !important;
+      }
+
+      #welcomePopup .popup-emphasis,
+      #welcomePopup .popup-emphasis *{
+        font-family:"Lora", Georgia, serif !important;
+      }
+    }
+
+    /*
+      Máy ngang hoặc điện thoại thấp: vẫn dùng viewport ổn định,
+      tránh rule max-height:600px phía style.css đổi lại dvh.
+    */
+    @media (max-width:600px) and (max-height:600px){
+      #welcomePopup .popup-book,
+      #welcomePopup .popup-book.popup-onepage{
+        max-height:94svh !important;
+      }
+
+      #welcomePopup .thankyou-onepage{
+        max-height:calc(94svh - 53px) !important;
+      }
+    }
+  </style>
+
 </head>
 <body>
   <!-- =====================================================
@@ -851,8 +1008,6 @@
     });
 
     /* ---------- BỘ CHUYỂN VIDEO (2024 · 2025 · 2026) ---------- */
-    function pad(n) { return (n < 10 ? '0' : '') + n; }
-
     document.querySelectorAll('[data-video-slider]').forEach(function (root) {
       var list = [].map.call(root.querySelectorAll('.video-sources [data-src]'), function (el) {
         return el.getAttribute('data-src');
@@ -862,7 +1017,9 @@
       var counter = root.querySelector('.video-counter');
       var playlist = root.querySelector('.video-playlist');
       var arrows = root.querySelectorAll('.video-arrow');
+      var yearDetails = root.closest('.timeline-year');
       var current = 0;
+      var loadedIndex = -1;
 
       if (!list.length) {
         arrows.forEach(function (a) { a.hidden = true; });
@@ -871,7 +1028,24 @@
         return;
       }
 
+      // Dùng <source type="video/mp4"> native thay vì gán video.src trực tiếp.
+      // Đồng thời chỉ load video của năm đang được mở.
+      video.removeAttribute('src');
+
+      Array.prototype.slice.call(video.querySelectorAll('source')).forEach(function (node) {
+        node.remove();
+      });
+
+      var source = document.createElement('source');
+      source.type = 'video/mp4';
+      video.appendChild(source);
+
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+      video.preload = 'metadata';
+
       var single = list.length === 1;
+
       if (single) {
         arrows.forEach(function (a) { a.hidden = true; });
         playlist.hidden = true;
@@ -884,109 +1058,131 @@
         b.className = 'video-index-btn';
         b.textContent = String(i + 1);
         b.setAttribute('aria-label', 'Phát video ' + (i + 1));
-        b.setAttribute('aria-pressed', 'false');
-        b.addEventListener('click', function () { load(i, true); });
+        b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+
+        if (i === 0) b.classList.add('active');
+
+        b.addEventListener('click', function () {
+          load(i, true);
+        });
+
         playlist.appendChild(b);
       });
+
       var buttons = playlist.querySelectorAll('.video-index-btn');
 
-      function load(index, autoplay) {
-        current = (index + list.length) % list.length;
-        var rb = root.querySelector('.video-replay'); if (rb) rb.hidden = true;
-        video.style.removeProperty('aspect-ratio');
-        // Mobile-safe: đổi src trực tiếp.
-        // Không gọi load() khi video đang không có src vì Safari/iOS có thể
-        // phát sinh MEDIA_ERR_SRC_NOT_SUPPORTED cho chính lần reset đó.
-        video.pause();
-        video.setAttribute('playsinline', '');
-        video.setAttribute('webkit-playsinline', '');
-        video.preload = 'metadata';
-
-        // GitHub Pages/CDN có thể còn cache bản video cũ sau khi deploy.
-        // Giữ nguyên data-src để không ảnh hưởng pipeline Prepare,
-        // chỉ thêm version ở runtime để browser lấy đúng bản Pages mới.
-        var sourceUrl = list[current];
-        var joiner = sourceUrl.indexOf('?') >= 0 ? '&' : '?';
-        video.dataset.originalSrc = sourceUrl;
-        video.dataset.cacheRetry = '0';
-        video.src = sourceUrl + joiner + 'media=pages-v2-20261014';
-        video.load();
-
-        // Khôi phục counter bình thường mỗi khi chuyển sang video mới.
-        counter.hidden = false;
-        counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length;
-
-        if (autoplay) {
-          var p = video.play();
-          if (p && p.catch) {
-            p.catch(function () {
-              // Không biến lỗi autoplay/user-gesture thành lỗi nguồn video.
-            });
-          }
-        }
+      function updateButtons() {
         buttons.forEach(function (b, i) {
           var isActive = i === current;
           b.classList.toggle('active', isActive);
           b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
-        counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length;
       }
 
-      arrows.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          load(current + parseInt(btn.getAttribute('data-dir'), 10), true);
-        });
-      });
-
-      // Có tiếng nhưng không có hình: trình duyệt không giải mã được codec hình (thường là HEVC của iPhone)
-      video.addEventListener('loadedmetadata', function () {
-        if (video.videoWidth === 0) {
-          counter.hidden = false;
-          counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length +
-            ' — file này chỉ có tiếng, trình duyệt không giải mã được hình (HEVC). Cần đổi sang MP4 H.264: ' +
-            list[current].split('/').pop();
-        }
-      });
-
-      video.addEventListener('error', function () {
-        // Retry đúng 1 lần với cache-buster mới.
-        // Hữu ích ngay sau deploy khi CDN/browser còn giữ response cũ.
-        var assigned = video.getAttribute('src') || '';
-        if (!assigned || !video.error) return;
-
-        if (video.dataset.cacheRetry !== '1' && video.dataset.originalSrc) {
-          video.dataset.cacheRetry = '1';
-
-          var retryUrl = video.dataset.originalSrc;
-          var joiner = retryUrl.indexOf('?') >= 0 ? '&' : '?';
-
-          counter.hidden = false;
-          counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length +
-            ' — đang tải lại video…';
-
-          video.src = retryUrl + joiner + 'media=' + Date.now();
-          video.load();
+      function updateCounter(message) {
+        if (single) {
+          counter.hidden = true;
           return;
         }
 
         counter.hidden = false;
-        counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length +
-          ' — không phát được video trên thiết bị này.';
+        counter.textContent =
+          message || ('Video ' + (current + 1) + ' / ' + list.length);
+      }
+
+      function load(index, autoplay) {
+        current = (index + list.length) % list.length;
+
+        var rb = root.querySelector('.video-replay');
+        if (rb) rb.hidden = true;
+
+        video.pause();
+        video.style.removeProperty('aspect-ratio');
+
+        var nextUrl = list[current];
+
+        // Dùng đúng đường dẫn local đã được Deploy materialize vào GitHub Pages.
+        if (loadedIndex !== current || source.getAttribute('src') !== nextUrl) {
+          source.src = nextUrl;
+          source.type = 'video/mp4';
+          loadedIndex = current;
+          video.load();
+        }
+
+        updateButtons();
+        updateCounter();
+
+        if (autoplay) {
+          var p = video.play();
+
+          if (p && p.catch) {
+            p.catch(function () {
+              // Autoplay bị chặn không được xem là lỗi video.
+            });
+          }
+        }
+      }
+
+      function ensureLoaded() {
+        if (loadedIndex < 0) load(current, false);
+      }
+
+      arrows.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          load(
+            current + parseInt(btn.getAttribute('data-dir'), 10),
+            true
+          );
+        });
       });
 
       video.addEventListener('loadedmetadata', function () {
-        // Nếu source mới đã load được metadata thì xóa thông báo lỗi cũ.
-        counter.hidden = false;
-        counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length;
+        if (video.videoWidth) {
+          video.style.setProperty(
+            'aspect-ratio',
+            video.videoWidth + ' / ' + video.videoHeight,
+            'important'
+          );
+        }
+
+        updateCounter();
       });
 
       video.addEventListener('canplay', function () {
-        // Đảm bảo lỗi của source trước không còn lưu trên giao diện.
-        counter.hidden = false;
-        counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length;
+        updateCounter();
       });
 
-      load(0, false);
+      video.addEventListener('error', function () {
+        if (!video.error) return;
+
+        var code = video.error.code || 0;
+        var reason = {
+          1: 'đã hủy tải',
+          2: 'lỗi mạng khi tải video',
+          3: 'lỗi giải mã video',
+          4: 'nguồn video không được trình duyệt hỗ trợ'
+        }[code] || 'lỗi không xác định';
+
+        counter.hidden = false;
+        counter.textContent =
+          'Video ' + (current + 1) + ' / ' + list.length +
+          ' — ' + reason + ' (mã ' + code + ').';
+      });
+
+      // Không tải đồng thời video ẩn của các năm đang đóng.
+      if (yearDetails) {
+        if (yearDetails.open) ensureLoaded();
+
+        yearDetails.addEventListener('toggle', function () {
+          if (yearDetails.open) {
+            ensureLoaded();
+          } else if (!video.paused) {
+            video.pause();
+          }
+        });
+      } else {
+        ensureLoaded();
+      }
     });
 
     /* ---------- ẢNH HEIC: tự chuyển sang JPEG nếu trình duyệt không mở được ---------- */
