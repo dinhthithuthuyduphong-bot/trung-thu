@@ -387,6 +387,21 @@
     }
   </style>
 
+
+  <style id="mobile-popup-title-deterministic-font">
+    @media (max-width:900px), (hover:none) and (pointer:coarse){
+      #welcomePopup .popup-title,
+      #welcomePopup .popup-title strong{
+        font-family:"Be Vietnam Pro", Arial, sans-serif !important;
+        font-style:normal !important;
+        font-weight:700 !important;
+        letter-spacing:.035em !important;
+        text-transform:none !important;
+        font-variant-ligatures:none !important;
+      }
+    }
+  </style>
+
 </head>
 <body>
   <!-- =====================================================
@@ -1007,6 +1022,13 @@
       a.addEventListener('play', function () { if (anyVideoPlaying()) a.pause(); });
     });
 
+    /* Poster thật lấy từ chính 3 video Tổng kết 2026. */
+    var videoPosterMap = {
+      'assets/video/nam2026/tongket/copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.mp4': 'assets/video/posters/2026/copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.jpg',
+      'assets/video/nam2026/tongket/copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.mp4': 'assets/video/posters/2026/copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.jpg',
+      'assets/video/nam2026/tongket/Trailler.mp4': 'assets/video/posters/2026/Trailler.jpg'
+    };
+
     /* ---------- BỘ CHUYỂN VIDEO (2024 · 2025 · 2026) ---------- */
     document.querySelectorAll('[data-video-slider]').forEach(function (root) {
       var list = [].map.call(root.querySelectorAll('.video-sources [data-src]'), function (el) {
@@ -1042,7 +1064,8 @@
 
       video.setAttribute('playsinline', '');
       video.setAttribute('webkit-playsinline', '');
-      video.preload = 'metadata';
+      video.preload = 'auto';
+      video.setAttribute('controls', '');
 
       var single = list.length === 1;
 
@@ -1100,6 +1123,13 @@
         video.style.removeProperty('aspect-ratio');
 
         var nextUrl = list[current];
+        var posterUrl = videoPosterMap[nextUrl] || '';
+
+        if (posterUrl) {
+          video.setAttribute('poster', posterUrl);
+        } else {
+          video.removeAttribute('poster');
+        }
 
         // Dùng đúng đường dẫn local đã được Deploy materialize vào GitHub Pages.
         if (loadedIndex !== current || source.getAttribute('src') !== nextUrl) {
