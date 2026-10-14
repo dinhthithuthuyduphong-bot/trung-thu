@@ -1,0 +1,177 @@
+name: Normalize 2026 Tổng kết Videos
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  SOURCE_TAG: media-v1
+  TARGET_TAG: media-pages-v2
+
+jobs:
+  normalize:
+    name: Normalize • 2026 • Tổng kết
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - name: Install FFmpeg
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Ensure target release exists
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          if gh release view "${TARGET_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "Release ${TARGET_TAG} already exists."
+          else
+            gh release create "${TARGET_TAG}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --target "${GITHUB_SHA}" \
+              --title "Trung Thu Cho Em — Pages Mobile Media V2" \
+              --notes "Normalized H.264/AAC media used to build the GitHub Pages site."
+          fi
+
+      - name: Download only 2026 recap source videos
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          rm -rf _tongket_source _tongket_output
+          mkdir -p _tongket_source _tongket_output
+
+          gh release download "${SOURCE_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "2026-tongket__copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.MOV" \
+            --dir _tongket_source
+
+          gh release download "${SOURCE_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "2026-tongket__copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.MOV" \
+            --dir _tongket_source
+
+          gh release download "${SOURCE_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "2026-tongket__Trailler.mp4" \
+            --dir _tongket_source
+
+          test -s "_tongket_source/2026-tongket__copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.MOV"
+          test -s "_tongket_source/2026-tongket__copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.MOV"
+          test -s "_tongket_source/2026-tongket__Trailler.mp4"
+
+      - name: Re-encode recap videos for mobile playback
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          encode() {
+            src="$1"
+            out="$2"
+
+            echo "Encoding: ${src} -> ${out}"
+
+            ffmpeg \
+              -hide_banner -loglevel warning -y \
+              -i "${src}" \
+              -map 0:v:0 \
+              -map 0:a:0? \
+              -sn -dn \
+              -map_metadata -1 \
+              -vf "scale=1920:1920:force_original_aspect_ratio=decrease:force_divisible_by=2,fps=30,setsar=1" \
+              -c:v libx264 \
+              -profile:v main \
+              -level:v 4.1 \
+              -tag:v avc1 \
+              -preset medium \
+              -crf 22 \
+              -pix_fmt yuv420p \
+              -maxrate 6M \
+              -bufsize 12M \
+              -c:a aac \
+              -profile:a aac_low \
+              -b:a 128k \
+              -ar 48000 \
+              -ac 2 \
+              -movflags +faststart \
+              -metadata:s:v:0 rotate=0 \
+              "${out}"
+          }
+
+          encode \
+            "_tongket_source/2026-tongket__copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.MOV" \
+            "_tongket_output/2026-tongket__copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.mp4"
+
+          encode \
+            "_tongket_source/2026-tongket__copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.MOV" \
+            "_tongket_output/2026-tongket__copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.mp4"
+
+          encode \
+            "_tongket_source/2026-tongket__Trailler.mp4" \
+            "_tongket_output/2026-tongket__Trailler.mp4"
+
+      - name: Validate mobile-safe MP4 output
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for f in _tongket_output/*.mp4; do
+            echo "===== ${f} ====="
+
+            info="$(ffprobe \
+              -v error \
+              -select_streams v:0 \
+              -show_entries stream=codec_name,codec_tag_string,profile,level,pix_fmt,width,height \
+              -of default=noprint_wrappers=1 \
+              "${f}")"
+
+            echo "${info}"
+            grep -q '^codec_name=h264$' <<< "${info}"
+            grep -q '^codec_tag_string=avc1$' <<< "${info}"
+            grep -q '^pix_fmt=yuv420p$' <<< "${info}"
+
+            ffprobe \
+              -v error \
+              -select_streams a:0 \
+              -show_entries stream=codec_name,profile,sample_rate,channels \
+              -of default=noprint_wrappers=1 \
+              "${f}" || true
+          done
+
+      - name: Replace only 2026 recap assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          for f in _tongket_output/*.mp4; do
+            gh release upload "${TARGET_TAG}" "${f}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --clobber
+          done
+
+          echo "Only the three 2026 Tổng kết assets were replaced."
+
+      - name: Show final recap asset sizes
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          gh release view "${TARGET_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --json assets \
+            --jq '.assets[] | select(.name | startswith("2026-tongket__")) | "\(.name)\t\(.size) bytes"'
