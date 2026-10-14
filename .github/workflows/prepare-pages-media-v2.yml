@@ -1,0 +1,135 @@
+name: Prepare Pages Video Media V2
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  MEDIA_TAG: media-pages-v2
+
+jobs:
+  ensure-release:
+    name: Ensure normalized media release
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Ensure release exists
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          if gh release view "${MEDIA_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "Release ${MEDIA_TAG} already exists."
+          else
+            gh release create "${MEDIA_TAG}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --target "${GITHUB_SHA}" \
+              --title "Trung Thu Cho Em — Pages Mobile Media V2" \
+              --notes "Normalized H.264/AAC media used to build the GitHub Pages site."
+          fi
+
+  prepare:
+    name: Normalize • ${{ matrix.label }}
+    needs: ensure-release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        include:
+          - label: "2025"
+            target_dir: "assets/video/nam2025"
+
+          - label: "2026 • Gói quà"
+            target_dir: "assets/video/nam2026/goiqua"
+
+          - label: "2026 • Kick-off"
+            target_dir: "assets/video/nam2026/kick-off"
+
+          - label: "2026 • Chùa"
+            target_dir: "assets/video/nam2026/chua"
+
+          - label: "2026 • Tổng kết"
+            target_dir: "assets/video/nam2026/tongket"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install FFmpeg
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install \
+            "gdown>=6.1,<7" \
+            "beautifulsoup4>=4.12,<5"
+
+      - name: Read already-normalized assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release view "${MEDIA_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --json assets \
+            --jq '.assets[].name' > normalized-assets.txt
+
+          echo "Already normalized:"
+          cat normalized-assets.txt || true
+
+      - name: Normalize all requested videos
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          python scripts/prepare_pages_media_v2.py \
+            --target-dir "${{ matrix.target_dir }}" \
+            --existing-assets-file normalized-assets.txt \
+            --repository "${GITHUB_REPOSITORY}" \
+            --release-tag "${MEDIA_TAG}"
+
+  summary:
+    name: V2 media summary
+    needs: prepare
+    if: always()
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Show normalized asset size
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          gh release view "${MEDIA_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --json assets \
+            --jq '
+              .assets as $a |
+              "Files: \($a | length)",
+              "Bytes: \($a | map(.size) | add // 0)",
+              ($a[] | "\(.name)\t\(.size)")
+            '

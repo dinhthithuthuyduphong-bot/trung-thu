@@ -16,80 +16,137 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MEDIA_TAG: media-v1
+  MEDIA_TAG: media-pages-v2
 
 jobs:
   build:
-    name: Build lightweight card
+    name: Build self-contained card
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 90
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - name: Install HTML parser
+
+      - name: Install parser
         shell: bash
         run: |
           set -euo pipefail
           python -m pip install "beautifulsoup4>=4.12,<5"
-      - name: Read permanent release media list
+
+      - name: Validate normalized media release
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if gh release view "${MEDIA_TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release view "${MEDIA_TAG}" \
-              --repo "${GITHUB_REPOSITORY}" \
-              --json assets \
-              --jq '.assets[].name' > release-assets.txt
-          else
-            echo "::warning::Release ${MEDIA_TAG} does not exist yet. Run 'Prepare Video Media Once' first."
-            : > release-assets.txt
-          fi
-          echo "Release media count: $(wc -l < release-assets.txt)"
-      - name: Point 2025 and 2026 videos to permanent release
+
+          gh release view "${MEDIA_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" >/dev/null || {
+              echo "::error::Release ${MEDIA_TAG} does not exist. Run 'Prepare Pages Video Media V2' first."
+              exit 1
+            }
+
+      - name: Download normalized media for Pages
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          rm -rf _normalized_release
+          mkdir -p _normalized_release
+
+          gh release download "${MEDIA_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "*.mp4" \
+            --dir _normalized_release
+
+          echo "Downloaded normalized media:"
+          du -sh _normalized_release
+          find _normalized_release -maxdepth 1 -type f -name '*.mp4' | wc -l
+
+      - name: Materialize videos at local website paths
         shell: bash
         run: |
           set -euo pipefail
-          python scripts/rewrite_release_media_urls.py \
-            --repository "${GITHUB_REPOSITORY}" \
-            --tag "${MEDIA_TAG}" \
-            --assets-file release-assets.txt
-      - name: Validate website files
+
+          python scripts/materialize_pages_media.py \
+            --release-dir _normalized_release
+
+      - name: Validate website
         shell: bash
         run: |
           set -euo pipefail
+
           test -f index.html
           test -f style.css
           test -f script.js
           test -d assets
-          test -f scripts/rewrite_release_media_urls.py
-      - name: Prepare lightweight final card
+
+          python - <<'PY'
+          from pathlib import Path
+          from bs4 import BeautifulSoup
+
+          root = Path(".")
+          soup = BeautifulSoup(Path("index.html").read_text(encoding="utf-8"), "html.parser")
+
+          missing = []
+          for node in soup.select(".video-sources [data-src]"):
+              src = (node.get("data-src") or "").strip()
+              if not src or src.startswith(("http://", "https://")):
+                  continue
+              if not (root / src).exists():
+                  missing.append(src)
+
+          if missing:
+              raise SystemExit(
+                  "Missing local video files:\n" + "\n".join(missing)
+              )
+
+          print("All local video paths exist.")
+          PY
+
+      - name: Prepare final Pages site
         shell: bash
         run: |
           set -euo pipefail
+
           rm -rf _site
-          mkdir -p _site/assets
+          mkdir -p _site
+
           cp index.html _site/
           cp style.css _site/
           cp script.js _site/
-          rsync -a \
-            --exclude='/video/nam2025/' \
-            --exclude='/video/nam2026/' \
-            assets/ _site/assets/
+          cp -R assets _site/assets
+
           if [ -f favicon.ico ]; then cp favicon.ico _site/; fi
           if [ -f manifest.webmanifest ]; then cp manifest.webmanifest _site/; fi
           if [ -f robots.txt ]; then cp robots.txt _site/; fi
+
           touch _site/.nojekyll
-          echo "Final lightweight site size:"
+
+          BYTES="$(du -sb _site | cut -f1)"
+          LIMIT="$((950 * 1024 * 1024))"
+
+          echo "Final site:"
           du -sh _site
+          echo "Bytes: ${BYTES}"
+
+          if [ "${BYTES}" -gt "${LIMIT}" ]; then
+            echo "::error::Final site exceeds the 950 MiB safety limit for GitHub Pages."
+            exit 1
+          fi
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Upload lightweight site artifact
+
+      - name: Upload final site artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
@@ -98,9 +155,11 @@ jobs:
     name: Deploy final card
     runs-on: ubuntu-24.04
     needs: build
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
