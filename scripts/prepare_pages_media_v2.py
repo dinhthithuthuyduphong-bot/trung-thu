@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import shutil
 import subprocess
@@ -98,14 +99,16 @@ def drive_index(entries):
     return by_stem
 
 
-def choose_source(matches, html_src: str):
+def preferred_candidates(matches, html_src: str):
     """
-    Prefer the same extension requested by HTML.
-    If that does not exist, accept exactly one MOV as the source.
-    Every chosen source is transcoded again; MP4 is NOT copied through.
+    Return the candidate set in preference order.
+
+    HTML currently asks for .mp4. If Drive has a matching .mp4, use that set.
+    Otherwise use MOV candidates. Do not guess when more than one file remains;
+    duplicate resolution is handled by byte hashing later.
     """
     if not matches:
-        return None
+        return []
 
     wanted_ext = Path(html_src).suffix.casefold()
 
@@ -113,29 +116,98 @@ def choose_source(matches, html_src: str):
         entry for entry in matches
         if Path(str(entry.path)).suffix.casefold() == wanted_ext
     ]
-    if len(same) == 1:
-        return same[0]
-    if len(same) > 1:
-        fail(
-            f"Multiple Drive files match {Path(html_src).stem} "
-            f"with extension {wanted_ext}"
-        )
+    if same:
+        return same
 
     movs = [
         entry for entry in matches
         if Path(str(entry.path)).suffix.casefold() == ".mov"
     ]
-    if len(movs) == 1:
-        return movs[0]
-    if len(movs) > 1:
-        fail(f"Multiple MOV files share stem {Path(html_src).stem}")
+    if movs:
+        return movs
 
-    if len(matches) == 1:
-        return matches[0]
+    return matches
+
+
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def resolve_duplicate_candidates(
+    candidates,
+    html_src: str,
+    work_dir: Path,
+):
+    """
+    Resolve duplicate Drive names safely.
+
+    If only one candidate exists -> use it.
+    If several candidates exist -> download each and compare SHA256.
+    Auto-select only when every candidate is byte-identical.
+    If contents differ, fail with exact names/IDs rather than guessing.
+    """
+    if not candidates:
+        return None
+
+    if len(candidates) == 1:
+        return candidates[0]
+
+    dup_dir = work_dir / "_duplicate_check" / Path(html_src).stem
+    dup_dir.mkdir(parents=True, exist_ok=True)
+
+    hashes = {}
+    downloaded_paths = []
+
+    print(
+        f"DUPLICATE STEM: {Path(html_src).stem} -> "
+        + ", ".join(
+            f"{Path(str(entry.path)).name} [{entry.id}]"
+            for entry in candidates
+        ),
+        flush=True,
+    )
+
+    for i, entry in enumerate(candidates, start=1):
+        original_name = Path(str(entry.path)).name
+        dest = dup_dir / f"{i:02d}__{entry.id}__{original_name}"
+        download_one(str(entry.id), dest)
+        digest = sha256_file(dest)
+        hashes.setdefault(digest, []).append(entry)
+        downloaded_paths.append(dest)
+
+        print(
+            f"DUP HASH: {original_name} [{entry.id}] -> {digest}",
+            flush=True,
+        )
+
+    for p in downloaded_paths:
+        p.unlink(missing_ok=True)
+
+    if len(hashes) == 1:
+        chosen = candidates[0]
+        print(
+            f"DUPLICATES IDENTICAL -> using "
+            f"{Path(str(chosen.path)).name} [{chosen.id}]",
+            flush=True,
+        )
+        return chosen
+
+    detail = "; ".join(
+        f"{digest}: "
+        + ", ".join(
+            f"{Path(str(entry.path)).name} [{entry.id}]"
+            for entry in entries
+        )
+        for digest, entries in hashes.items()
+    )
 
     fail(
-        f"Multiple Drive candidates share stem {Path(html_src).stem}: "
-        + ", ".join(Path(str(x.path)).name for x in matches)
+        f"Duplicate Drive files for {html_src} have DIFFERENT contents. "
+        f"Cannot choose safely. {detail}"
     )
 
 
@@ -361,7 +433,12 @@ def main():
             by_stem = drive_index(entries)
 
         matches = by_stem.get(stem.casefold(), [])
-        chosen = choose_source(matches, html_src)
+        candidates = preferred_candidates(matches, html_src)
+        chosen = resolve_duplicate_candidates(
+            candidates,
+            html_src,
+            work,
+        )
         output = work / asset
 
         print()
