@@ -860,7 +860,6 @@
     });
 
     /* ---------- BỘ CHUYỂN VIDEO (2024 · 2025 · 2026) ---------- */
-    var POSTER_TIME = 0.5; // giây dùng làm khung hình đại diện
     function pad(n) { return (n < 10 ? '0' : '') + n; }
 
     document.querySelectorAll('[data-video-slider]').forEach(function (root) {
@@ -904,8 +903,15 @@
         current = (index + list.length) % list.length;
         var rb = root.querySelector('.video-replay'); if (rb) rb.hidden = true;
         video.style.removeProperty('aspect-ratio');
-        // Gán src trực tiếp (không khai báo type) để .MOV/.mp4 đều được trình duyệt tự nhận diện
-        video.src = list[current] + '#t=' + POSTER_TIME;
+        // Mobile-safe: gán URL video trực tiếp, không ép seek lúc vừa tải.
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.preload = 'metadata';
+        video.src = list[current];
         video.load();
         if (autoplay) { var p = video.play(); if (p && p.catch) p.catch(function () {}); }
         buttons.forEach(function (b, i) {
@@ -935,7 +941,7 @@
       video.addEventListener('error', function () {
         counter.hidden = false;
         counter.textContent = 'Video ' + (current + 1) + ' / ' + list.length +
-          ' — không phát được file này. Kiểm tra đường dẫn (phân biệt hoa/thường) hoặc chuyển sang MP4 (H.264 + AAC).';
+          ' — không phát được video trên thiết bị này. File hoặc máy chủ video có thể không tương thích với trình phát mobile.';
       });
 
       load(0, false);
