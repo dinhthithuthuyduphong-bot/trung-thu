@@ -140,6 +140,96 @@
     .year-gallery.is-single.is-landscape .gallery-card{width:min(100%,760px) !important;}
     .year-gallery.is-single .gallery-card span{text-align:center;}
   </style>
+
+  <style id="impact-growth-demo">
+    /* DEMO — BỐN MÙA TRĂNG · HÀNH TRÌNH TRƯỞNG THÀNH */
+    .impact-growth-section{position:relative;overflow:hidden;width:min(1120px,calc(100% - 32px));margin:54px auto 72px;padding:clamp(28px,5vw,56px);border:1px solid rgba(216,178,100,.45);border-radius:32px;background:radial-gradient(circle at 88% 10%,rgba(242,223,173,.48),transparent 26%),radial-gradient(circle at 8% 88%,rgba(224,138,106,.14),transparent 28%),linear-gradient(145deg,rgba(255,253,248,.98),rgba(255,248,234,.94));box-shadow:0 24px 70px rgba(93,30,47,.10);isolation:isolate}
+    .impact-growth-section::before{content:"";position:absolute;width:220px;height:220px;right:-62px;top:-72px;border-radius:50%;background:rgba(242,223,173,.58);box-shadow:0 0 0 22px rgba(242,223,173,.12),0 0 90px rgba(216,178,100,.28);z-index:-1}
+    .impact-growth-section::after{content:"✦  ·  ✧  ·  ✦";position:absolute;right:34px;top:24px;color:rgba(138,47,63,.24);letter-spacing:10px;font-size:16px;pointer-events:none}
+    .impact-growth-head{max-width:760px;margin:0 auto 36px;text-align:center}
+    .impact-growth-kicker{display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 14px;border:1px solid rgba(216,178,100,.5);border-radius:999px;background:rgba(255,255,255,.62);color:#8a2f3f;font:700 12px/1.2 "Be Vietnam Pro",sans-serif;letter-spacing:.12em}
+    .impact-growth-head h2{margin:0;color:#5d1e2f;font-family:"Lora",serif;font-size:clamp(30px,5vw,54px);line-height:1.08}
+    .impact-growth-head h2 em{display:block;margin-top:8px;color:#e08a6a;font-family:"Dancing Script",cursive;font-size:1.12em;font-weight:700}
+    .impact-growth-intro{max-width:680px;margin:18px auto 0;color:#7a6c62;font-size:clamp(14px,2vw,17px);line-height:1.75}
+    .impact-growth-track{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:stretch;padding-top:30px}
+    .impact-growth-track::before{content:"";position:absolute;left:7%;right:7%;top:10px;height:3px;border-radius:999px;background:linear-gradient(90deg,rgba(216,178,100,.28),rgba(216,178,100,.55) 32%,rgba(224,138,106,.72) 68%,rgba(138,47,63,.82));transform:scaleX(0);transform-origin:left center;transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
+    .impact-growth-section.is-visible .impact-growth-track::before{transform:scaleX(1)}
+    .impact-year-card{position:relative;min-width:0;padding:26px 18px 20px;border:1px solid rgba(216,178,100,.34);border-radius:22px;background:rgba(255,255,255,.76);box-shadow:0 12px 30px rgba(93,30,47,.07);opacity:0;transform:translateY(24px) scale(.985);transition:opacity .7s ease,transform .8s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease}
+    .impact-growth-section.is-visible .impact-year-card{opacity:1;transform:translateY(0) scale(1)}
+    .impact-growth-section.is-visible .impact-year-card:nth-child(1){transition-delay:.10s}.impact-growth-section.is-visible .impact-year-card:nth-child(2){transition-delay:.28s}.impact-growth-section.is-visible .impact-year-card:nth-child(3){transition-delay:.46s}.impact-growth-section.is-visible .impact-year-card:nth-child(4){transition-delay:.64s}
+    .impact-year-card:hover{transform:translateY(-5px) scale(1.01);box-shadow:0 18px 38px rgba(93,30,47,.11)}
+    .impact-year-card::before{content:"";position:absolute;left:50%;top:-27px;width:14px;height:14px;border-radius:50%;transform:translateX(-50%);background:#fffdf8;border:3px solid #d8b264;box-shadow:0 0 0 5px rgba(216,178,100,.16);transition:background .4s ease,box-shadow .4s ease}
+    .impact-growth-section.is-visible .impact-year-card::before{background:#e08a6a;box-shadow:0 0 0 6px rgba(224,138,106,.16),0 0 18px rgba(224,138,106,.34)}
+    .impact-year-card[data-year="2026"]{border-color:rgba(138,47,63,.30);background:linear-gradient(180deg,rgba(255,253,248,.94),rgba(253,232,223,.72))}.impact-year-card[data-year="2026"]::before{border-color:#8a2f3f}
+    .impact-year{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.impact-year strong{color:#5d1e2f;font:700 clamp(24px,3vw,32px)/1 "Lora",serif}.impact-year span{color:#8a2f3f;font-size:18px}
+    .impact-year-title{min-height:46px;margin:0 0 18px;color:#35131d;font-size:15px;line-height:1.55;font-weight:700}
+    .impact-stat{padding:12px 0;border-top:1px solid rgba(216,178,100,.25)}.impact-stat:first-of-type{border-top:none;padding-top:0}.impact-stat-number{display:flex;align-items:baseline;gap:7px;color:#8a2f3f}.impact-stat-number b{font-family:"Lora",serif;font-size:clamp(34px,4.2vw,50px);line-height:1;font-weight:700;letter-spacing:-.04em}.impact-stat-number small{color:#9b7b68;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em}.impact-stat p{margin:7px 0 0;color:#6f625a;font-size:13px;line-height:1.55}.impact-stat p strong{color:#5d1e2f}
+    .impact-growth-note{margin:15px 0 0;color:#8d7c70;font-family:"Lora",serif;font-size:12.5px;font-style:italic;line-height:1.65}
+    .impact-growth-final{position:relative;margin:34px auto 0;max-width:820px;padding:24px 26px 22px;text-align:center;border-radius:22px;border:1px solid rgba(216,178,100,.38);background:rgba(255,253,248,.80);opacity:0;transform:translateY(18px);transition:opacity .8s ease .9s,transform .8s ease .9s}.impact-growth-section.is-visible .impact-growth-final{opacity:1;transform:translateY(0)}
+    .impact-growth-final::before{content:"🌙";display:block;width:46px;height:46px;margin:-47px auto 12px;border-radius:50%;background:#fff8ea;box-shadow:0 8px 22px rgba(93,30,47,.10);font-size:24px;line-height:46px}.impact-growth-final strong{display:block;color:#5d1e2f;font-family:"Lora",serif;font-size:clamp(17px,2.4vw,22px);line-height:1.55}.impact-growth-final p{margin:10px 0 0;color:#e08a6a;font-family:"Dancing Script",cursive;font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.25}
+    @media (max-width:900px){.impact-growth-section{width:min(100% - 20px,720px);margin:34px auto 50px;padding:30px 18px 34px;border-radius:26px}.impact-growth-track{grid-template-columns:1fr;gap:18px;padding-top:0;padding-left:24px}.impact-growth-track::before{left:6px;right:auto;top:12px;bottom:12px;width:3px;height:auto;transform:scaleY(0);transform-origin:center top;background:linear-gradient(180deg,rgba(216,178,100,.35),rgba(224,138,106,.68),rgba(138,47,63,.82))}.impact-growth-section.is-visible .impact-growth-track::before{transform:scaleY(1)}.impact-year-card{padding:21px 18px 18px}.impact-year-card::before{left:-24px;top:32px;transform:translateX(-50%)}.impact-year-title{min-height:0}.impact-stat-number b{font-size:40px}}
+    @media (max-width:520px){.impact-growth-section{width:calc(100% - 16px);padding:26px 14px 30px}.impact-growth-head{margin-bottom:28px}.impact-growth-intro{font-size:14px;line-height:1.65}.impact-year-card{border-radius:18px}.impact-growth-final{padding:22px 16px 18px}}
+    @media (prefers-reduced-motion:reduce){.impact-growth-track::before,.impact-year-card,.impact-growth-final{transition:none!important}}
+  </style>
+
+
+  <style id="mobile-popup-text-stability">
+    /* =====================================================
+       MOBILE — giữ chữ popup ổn định, không "nhảy múa"
+       Desktop giữ nguyên hiệu ứng hiện tại.
+       ===================================================== */
+    @media (max-width:600px){
+      #welcomePopup .popup-title,
+      #welcomePopup .popup-title *,
+      #welcomePopup .popup-copy-column,
+      #welcomePopup .popup-copy-column *,
+      #welcomePopup .popup-emphasis,
+      #welcomePopup .popup-message,
+      #welcomePopup .popup-signature,
+      #welcomePopup .popup-signature *,
+      #welcomePopup .popup-label,
+      #welcomePopup .popup-hint,
+      #welcomePopup .popup-divider,
+      #welcomePopup .popup-divider *{
+        animation:none !important;
+        transition:none !important;
+        transform:none !important;
+        opacity:1 !important;
+      }
+
+      #welcomePopup .popup-copy-column{
+        width:100% !important;
+        min-width:0 !important;
+        overflow-x:hidden !important;
+        overflow-y:auto !important;
+        scroll-behavior:auto !important;
+        -webkit-overflow-scrolling:touch;
+      }
+
+      #welcomePopup .popup-emphasis,
+      #welcomePopup .popup-message,
+      #welcomePopup .popup-signature,
+      #welcomePopup .popup-hint{
+        position:static !important;
+        left:auto !important;
+        right:auto !important;
+        top:auto !important;
+        bottom:auto !important;
+        width:auto !important;
+        max-width:100% !important;
+        margin-left:auto !important;
+        margin-right:auto !important;
+        overflow-wrap:break-word !important;
+        word-break:normal !important;
+        text-wrap:pretty;
+      }
+
+      #welcomePopup .popup-message{
+        line-height:1.65 !important;
+      }
+    }
+  </style>
+
 </head>
 <body>
   <!-- =====================================================
@@ -539,7 +629,7 @@
         </details>
 
         <!-- ====================== 2026 ====================== -->
-        <details class="timeline-year" id="year-2026" open>
+        <details class="timeline-year" id="year-2026">
           <summary>
             <span class="timeline-dot" aria-hidden="true"></span>
             <span class="year-number">2026</span>
@@ -557,205 +647,107 @@
               <p>Trao tặng những phần quà và sự ấm áp đến trẻ em cơ nhỡ đường phố, người già neo đơn và người khiếm thị.</p>
             </div>
 
-            <!-- EDIT 2026 — TIMELINE CHIA NHỎ -->
-            <div class="sub-timeline">
+            <!-- EDIT 2026 VIDEO — TEMPLATE GIỐNG 2024 / 2025 -->
+            <section class="year-block" data-video-slider>
+              <div class="block-title"><span>01</span><h4>Video clip</h4></div>
 
-            <!-- ===== 2026 · 1. Gói quà ===== -->
-            <details class="sub-phase">
-              <summary><span class="sub-num">01</span><span>Gói quà</span></summary>
-              <div class="sub-phase-body">
-              <section class="year-block" data-video-slider>
-            <div class="block-title"><span>01</span><h4>Video clip</h4></div>
-
-            <div class="timeline-video-shell video-slider">
-              <button class="video-arrow video-prev" type="button" aria-label="Video trước" data-dir="-1">&#10094;</button>
-              <video class="timeline-local-player" controls playsinline preload="metadata">
-                Trình duyệt của bạn không hỗ trợ thẻ video.
-              </video>
-              <button class="video-arrow video-next" type="button" aria-label="Video kế tiếp" data-dir="1">&#10095;</button>
-            </div>
-
-            <div class="video-playlist"></div>
-            <p class="video-counter"></p>
-
-            <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
-            <div class="video-sources"
-              data-drive-folder="https://drive.google.com/drive/folders/1u74Ncw8ZypUVSm1qDJvaPTdceGydVihA"
-              data-target-dir="assets/video/nam2026/goiqua">
-              <span data-src="assets/video/nam2026/goiqua/1K2VDB7CV_5R0TQO.mp4"></span>
-              <span data-src="assets/video/nam2026/goiqua/copy_F8FBB663-2E23-4F22-BDD9-63030E9B332D.mp4"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_4745.mp4"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_4748.mp4"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_4750.mp4"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_5904.mp4"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_5908.mp4"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_5909.mp4"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_5910.mp4"></span>
-              <span data-src="assets/video/nam2026/goiqua/IMG_5917.mp4"></span>
-            </div>
-          </section>
-              <section class="year-block">
-                <div class="block-title"><span>02</span><h4>Khoảnh khắc</h4></div>
-                <!-- 👉 DÁN ĐƯỜNG DẪN ẢNH VÀO CẢ data-full VÀ src (copy thêm dòng nếu cần nhiều ảnh) -->
-                <div class="year-gallery">
-                  <button class="gallery-card" data-full="assets/images/nam2026/goiqua/IMG_5911.jpg" type="button"><img src="assets/images/nam2026/goiqua/IMG_5911.jpg" alt="Ảnh gói quà" loading="lazy"><span>Khoảnh khắc</span></button>
-                </div>
-              </section>
+              <div class="timeline-video-shell video-slider">
+                <button class="video-arrow video-prev" type="button" aria-label="Video trước" data-dir="-1">&#10094;</button>
+                <video class="timeline-local-player" controls playsinline preload="metadata">
+                  Trình duyệt của bạn không hỗ trợ thẻ video.
+                </video>
+                <button class="video-arrow video-next" type="button" aria-label="Video kế tiếp" data-dir="1">&#10095;</button>
               </div>
-            </details>
 
-            <!-- ===== 2026 · 2. Kick-off ===== -->
-            <details class="sub-phase">
-              <summary><span class="sub-num">02</span><span>Kick-off</span></summary>
-              <div class="sub-phase-body">
-              <section class="year-block" data-video-slider>
-            <div class="block-title"><span>01</span><h4>Video clip</h4></div>
+              <div class="video-playlist"></div>
+              <p class="video-counter"></p>
 
-            <div class="timeline-video-shell video-slider">
-              <button class="video-arrow video-prev" type="button" aria-label="Video trước" data-dir="-1">&#10094;</button>
-              <video class="timeline-local-player" controls playsinline preload="metadata">
-                Trình duyệt của bạn không hỗ trợ thẻ video.
-              </video>
-              <button class="video-arrow video-next" type="button" aria-label="Video kế tiếp" data-dir="1">&#10095;</button>
-            </div>
-
-            <div class="video-playlist"></div>
-            <p class="video-counter"></p>
-
-            <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
-            <div class="video-sources"
-              data-drive-folder="https://drive.google.com/drive/folders/19tp_mel-OU-Wt9jypQw5tOKVdRi8bk5p"
-              data-target-dir="assets/video/nam2026/kick-off">
-              <span data-src="assets/video/nam2026/kick-off/IMG_5992.mp4"></span>
-              <span data-src="assets/video/nam2026/kick-off/IMG_6642.mp4"></span>
-              <span data-src="assets/video/nam2026/kick-off/IMG_6643.mp4"></span>
-              <span data-src="assets/video/nam2026/kick-off/IMG_6644.mp4"></span>
-              <span data-src="assets/video/nam2026/kick-off/IMG_9449.mp4"></span>
-              <span data-src="assets/video/nam2026/kick-off/IMG_9453.mp4"></span>
-              <span data-src="assets/video/nam2026/kick-off/IMG_9738.mp4"></span>
-              <span data-src="assets/video/nam2026/kick-off/IMG_9739.mp4"></span>
-              <span data-src="assets/video/nam2026/kick-off/IMG_9740.mp4"></span>
-            </div>
-          </section>
-              <section class="year-block">
-                <div class="block-title"><span>02</span><h4>Khoảnh khắc</h4></div>
-                <!-- 👉 DÁN ĐƯỜNG DẪN ẢNH VÀO CẢ data-full VÀ src (copy thêm dòng nếu cần nhiều ảnh) -->
-                <div class="year-gallery">
-                  <button class="gallery-card" data-full="assets/images/nam2026/kick-off/att.ow2_OerhZY1LLBeK7U1dNfpY3mifNw8narrmg36eMFw.jpg" type="button"><img src="assets/images/nam2026/kick-off/att.ow2_OerhZY1LLBeK7U1dNfpY3mifNw8narrmg36eMFw.jpg" alt="Ảnh kick-off 1" loading="lazy"><span>Khoảnh khắc 01</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/kick-off/IMG_5997.jpg" type="button"><img src="assets/images/nam2026/kick-off/IMG_5997.jpg" alt="Ảnh kick-off 2" loading="lazy"><span>Khoảnh khắc 02</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/kick-off/IMG_6635.JPG" type="button"><img src="assets/images/nam2026/kick-off/IMG_6635.JPG" alt="Ảnh kick-off 3" loading="lazy"><span>Khoảnh khắc 03</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/kick-off/IMG_8712.jpg" type="button"><img src="assets/images/nam2026/kick-off/IMG_8712.jpg" alt="Ảnh kick-off 4" loading="lazy"><span>Khoảnh khắc 04</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/kick-off/IMG_8713.jpg" type="button"><img src="assets/images/nam2026/kick-off/IMG_8713.jpg" alt="Ảnh kick-off 5" loading="lazy"><span>Khoảnh khắc 05</span></button>
-                </div>
-              </section>
+              <!-- Giữ lại 3 video phần Tổng kết -->
+              <div class="video-sources"
+                data-drive-folder="https://drive.google.com/drive/folders/1aR0NLo4dfQ405hJvb8fnmLCVyrfZEa0i"
+                data-target-dir="assets/video/nam2026/tongket">
+                <span data-src="assets/video/nam2026/tongket/copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.mp4"></span>
+                <span data-src="assets/video/nam2026/tongket/copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.mp4"></span>
+                <span data-src="assets/video/nam2026/tongket/Trailler.mp4"></span>
               </div>
-            </details>
+            </section>
 
-            <!-- ===== 2026 · 3. Chùa ===== -->
-            <details class="sub-phase">
-              <summary><span class="sub-num">03</span><span>Chùa</span></summary>
-              <div class="sub-phase-body">
-              <section class="year-block" data-video-slider>
-            <div class="block-title"><span>01</span><h4>Video clip</h4></div>
-
-            <div class="timeline-video-shell video-slider">
-              <button class="video-arrow video-prev" type="button" aria-label="Video trước" data-dir="-1">&#10094;</button>
-              <video class="timeline-local-player" controls playsinline preload="metadata">
-                Trình duyệt của bạn không hỗ trợ thẻ video.
-              </video>
-              <button class="video-arrow video-next" type="button" aria-label="Video kế tiếp" data-dir="1">&#10095;</button>
-            </div>
-
-            <div class="video-playlist"></div>
-            <p class="video-counter"></p>
-
-            <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
-            <div class="video-sources"
-              data-drive-folder="https://drive.google.com/drive/folders/19u5XI7671Gev4qIuPIliOC4pofaup6jt"
-              data-target-dir="assets/video/nam2026/chua">
-              <span data-src="assets/video/nam2026/chua/1K3K1I3P0_3SBFRU.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6029.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6034.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6038.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6040.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6044.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6046.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6054.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6055.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6056.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6057.mp4"></span>
-              <span data-src="assets/video/nam2026/chua/IMG_6059.mp4"></span>
-            </div>
-          </section>
-              <section class="year-block">
-                <div class="block-title"><span>02</span><h4>Khoảnh khắc</h4></div>
-                <!-- 👉 DÁN ĐƯỜNG DẪN ẢNH VÀO CẢ data-full VÀ src (copy thêm dòng nếu cần nhiều ảnh) -->
-                <div class="year-gallery">
-                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6033.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6033.jpg" alt="Ảnh chùa 1" loading="lazy"><span>Khoảnh khắc 01</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6045.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6045.jpg" alt="Ảnh chùa 2" loading="lazy"><span>Khoảnh khắc 02</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6048.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6048.jpg" alt="Ảnh chùa 3" loading="lazy"><span>Khoảnh khắc 03</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6050.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6050.jpg" alt="Ảnh chùa 4" loading="lazy"><span>Khoảnh khắc 04</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8654.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8654.jpg" alt="Ảnh chùa 5" loading="lazy"><span>Khoảnh khắc 05</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8658.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8658.jpg" alt="Ảnh chùa 6" loading="lazy"><span>Khoảnh khắc 06</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8666.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8666.jpg" alt="Ảnh chùa 7" loading="lazy"><span>Khoảnh khắc 07</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8673.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8673.jpg" alt="Ảnh chùa 8" loading="lazy"><span>Khoảnh khắc 08</span></button>
-                  <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8678.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8678.jpg" alt="Ảnh chùa 9" loading="lazy"><span>Khoảnh khắc 09</span></button>
-                </div>
-              </section>
+            <!-- EDIT 2026 IMAGES — GIỮ KHOẢNH KHẮC PHẦN CHÙA -->
+            <section class="year-block">
+              <div class="block-title"><span>02</span><h4>Khoảnh khắc</h4></div>
+              <div class="year-gallery">
+                <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6033.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6033.jpg" alt="Ảnh chùa 1" loading="lazy"><span>Khoảnh khắc 01</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6045.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6045.jpg" alt="Ảnh chùa 2" loading="lazy"><span>Khoảnh khắc 02</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6048.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6048.jpg" alt="Ảnh chùa 3" loading="lazy"><span>Khoảnh khắc 03</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_6050.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_6050.jpg" alt="Ảnh chùa 4" loading="lazy"><span>Khoảnh khắc 04</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8654.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8654.jpg" alt="Ảnh chùa 5" loading="lazy"><span>Khoảnh khắc 05</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8658.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8658.jpg" alt="Ảnh chùa 6" loading="lazy"><span>Khoảnh khắc 06</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8666.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8666.jpg" alt="Ảnh chùa 7" loading="lazy"><span>Khoảnh khắc 07</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8673.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8673.jpg" alt="Ảnh chùa 8" loading="lazy"><span>Khoảnh khắc 08</span></button>
+                <button class="gallery-card" data-full="assets/images/nam2026/chua/IMG_8678.jpg" type="button"><img src="assets/images/nam2026/chua/IMG_8678.jpg" alt="Ảnh chùa 9" loading="lazy"><span>Khoảnh khắc 09</span></button>
               </div>
-            </details>
+            </section>
 
-            <!-- ===== 2026 · 4. Tổng kết ===== -->
-            <details class="sub-phase">
-              <summary><span class="sub-num">04</span><span>Tổng kết</span></summary>
-              <div class="sub-phase-body">
-              <section class="year-block" data-video-slider>
-            <div class="block-title"><span>01</span><h4>Video clip</h4></div>
+            <!-- EDIT STATEMENT 2026 -->
+            <section class="year-block statement-block">
+              <div class="block-title"><span>03</span><h4>Sao kê</h4></div>
 
-            <div class="timeline-video-shell video-slider">
-              <button class="video-arrow video-prev" type="button" aria-label="Video trước" data-dir="-1">&#10094;</button>
-              <video class="timeline-local-player" controls playsinline preload="metadata">
-                Trình duyệt của bạn không hỗ trợ thẻ video.
-              </video>
-              <button class="video-arrow video-next" type="button" aria-label="Video kế tiếp" data-dir="1">&#10095;</button>
-            </div>
-
-            <div class="video-playlist"></div>
-            <p class="video-counter"></p>
-
-            <!-- 👉 DANH SÁCH VIDEO: thêm/bớt dòng <span data-src="..."> -->
-            <div class="video-sources"
-              data-drive-folder="https://drive.google.com/drive/folders/1aR0NLo4dfQ405hJvb8fnmLCVyrfZEa0i"
-              data-target-dir="assets/video/nam2026/tongket">
-              <span data-src="assets/video/nam2026/tongket/copy_B026110C-EA4E-42B4-A48A-C91B3B7E7B14.mp4"></span>
-              <span data-src="assets/video/nam2026/tongket/copy_14CBE5EF-D95C-4A43-9F6C-E173B0616CAA.mp4"></span>
-              <span data-src="assets/video/nam2026/tongket/Trailler.mp4"></span>
-            </div>
-          </section>
-              </div>
-            </details>
-
-            <!-- ===== 2026 · 5. Sao kê ===== -->
-            <details class="sub-phase">
-              <summary><span class="sub-num">05</span><span>Sao kê</span></summary>
-              <div class="sub-phase-body">
-              <section class="year-block statement-block">
-              <div class="block-title"><span>01</span><h4>Sao kê</h4></div>
-              
-              <!-- Đã cập nhật href, xóa class/thuộc tính chặn link và thêm target="_blank" -->
               <a class="statement-card" href="assets/saoke/Năm2026.pdf" target="_blank" data-resource-year="2026">
                 <div class="statement-icon">PDF</div>
-                <div><strong>Xem sao kê 2026</strong><small>Minh bạch đóng góp & chi phí hoạt động</small></div>
+                <div><strong>Xem sao kê 2026</strong><small>Minh bạch đóng góp &amp; chi phí hoạt động</small></div>
                 <span class="statement-arrow">↗</span>
               </a>
-              
             </section>
-              </div>
-            </details>
 
             </div>
           </div>
         </details>
+      </div>
+    </section>
+
+
+    <!-- =====================================================
+         BỐN MÙA TRĂNG — HÀNH TRÌNH TRƯỞNG THÀNH
+         Demo section mới; các section hiện có được giữ nguyên.
+         ===================================================== -->
+    <section id="impactGrowth" class="impact-growth-section reveal" aria-labelledby="impactGrowthTitle">
+      <div class="impact-growth-head">
+        <div class="impact-growth-kicker">✦ BỐN MÙA TRĂNG · MỘT HÀNH TRÌNH</div>
+        <h2 id="impactGrowthTitle">Từ một khởi đầu nhỏ,<em>yêu thương đã lớn lên.</em></h2>
+        <p class="impact-growth-intro">Mỗi năm không chỉ có thêm những phần quà. Hành trình còn học cách đi xa hơn, nhìn thấy nhiều người hơn và mang sự sẻ chia đến nhiều nơi hơn.</p>
+      </div>
+      <div class="impact-growth-track">
+        <article class="impact-year-card" data-year="2023">
+          <div class="impact-year"><strong>2023</strong><span aria-hidden="true">🌱</span></div>
+          <p class="impact-year-title">Hạt giống đầu tiên</p>
+          <div class="impact-stat"><div class="impact-stat-number"><b data-count="60">0</b><small>phần quà</small></div><p>Dành cho <strong>trẻ em đường phố</strong></p></div>
+          <div class="impact-stat"><div class="impact-stat-number"><b data-count="2">0</b><small>thùng sữa</small></div><p>Gửi đến <strong>các em nhỏ tại mái ấm</strong></p></div>
+          <p class="impact-growth-note">Một hành trình nhỏ bắt đầu bằng mong muốn rất đơn giản: mang một mùa Trung Thu ấm hơn đến cho các em.</p>
+        </article>
+        <article class="impact-year-card" data-year="2024">
+          <div class="impact-year"><strong>2024</strong><span aria-hidden="true">🌙</span></div>
+          <p class="impact-year-title">Không dừng lại</p>
+          <div class="impact-stat"><div class="impact-stat-number"><b data-count="75">0</b><small>phần quà</small></div><p>Dành cho <strong>trẻ em đường phố</strong></p></div>
+          <p class="impact-growth-note">Một năm nhiều khó khăn, nhưng hành trình vẫn tiếp tục. Ít người hơn — niềm tin lại lớn hơn.</p>
+        </article>
+        <article class="impact-year-card" data-year="2025">
+          <div class="impact-year"><strong>2025</strong><span aria-hidden="true">✨</span></div>
+          <p class="impact-year-title">Vòng tay rộng hơn</p>
+          <div class="impact-stat"><div class="impact-stat-number"><b data-count="150">0</b><small>phần quà</small></div><p>Dành cho <strong>trẻ em đường phố</strong></p></div>
+          <div class="impact-stat"><div class="impact-stat-number"><b data-count="50">0</b><small>phần quà</small></div><p>Gồm <strong>lồng đèn Trung Thu &amp; thiệp</strong><br/>gửi các bé <strong>Bệnh viện K</strong></p></div>
+          <p class="impact-growth-note">Hành trình bắt đầu chạm đến nhiều nơi hơn — và cũng gặp được nhiều tấm lòng đồng hành hơn.</p>
+        </article>
+        <article class="impact-year-card" data-year="2026">
+          <div class="impact-year"><strong>2026</strong><span aria-hidden="true">🏮</span></div>
+          <p class="impact-year-title">Yêu thương có thêm nhiều hình dáng</p>
+          <div class="impact-stat"><div class="impact-stat-number"><b data-count="150">0</b><small>phần quà</small></div><p>Dành cho <strong>trẻ em đường phố</strong></p></div>
+          <div class="impact-stat"><div class="impact-stat-number"><b data-count="60">0</b><small>phần</small></div><p><strong>Gạo &amp; gia vị</strong><br/>dành cho <strong>các cụ già khuyết tật</strong></p></div>
+          <div class="impact-stat"><div class="impact-stat-number"><b data-count="11">0</b><small>thùng sữa</small></div><p>Gửi đến <strong>Khoa Nhi · Bệnh viện K</strong></p></div>
+        </article>
+      </div>
+      <div class="impact-growth-final">
+        <strong>Từ trẻ em đường phố, đến mái ấm, bệnh viện và những người già cần được sẻ chia.</strong>
+        <p>“Chúng ta không chỉ trao nhiều hơn.<br/>Chúng ta đã học cách nhìn thấy nhiều người hơn.”</p>
       </div>
     </section>
 
@@ -1142,5 +1134,16 @@
     });
   })();
   </script>
+
+  <script id="impact-growth-demo-js">
+  (function(){
+    var section=document.getElementById('impactGrowth'); if(!section) return;
+    var hasAnimated=false;
+    function animateNumber(el,target,delay){var duration=900,startTime=null;window.setTimeout(function(){function step(ts){if(startTime===null)startTime=ts;var p=Math.min((ts-startTime)/duration,1);var e=1-Math.pow(1-p,3);el.textContent=Math.round(target*e);if(p<1){requestAnimationFrame(step)}else{el.textContent=String(target)}}requestAnimationFrame(step)},delay)}
+    function reveal(){if(hasAnimated)return;hasAnimated=true;section.classList.add('is-visible');if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){section.querySelectorAll('[data-count]').forEach(function(el){el.textContent=el.getAttribute('data-count')});return}section.querySelectorAll('[data-count]').forEach(function(el,i){animateNumber(el,parseInt(el.getAttribute('data-count'),10)||0,180+i*150)})}
+    if('IntersectionObserver'in window){var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting&&entry.intersectionRatio>=.22){reveal();observer.disconnect()}})},{threshold:[.22,.5]});observer.observe(section)}else{reveal()}
+  })();
+  </script>
+
 </body>
 </html>
